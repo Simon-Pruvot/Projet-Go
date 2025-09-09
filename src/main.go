@@ -22,6 +22,7 @@ func main() {
 	Simon.displayInfo()
 
 	Simon.accessInventory()
+	Simon.accessInventory2()
 }
 
 func Espace(esp int, chaine1 string, chaine2 string) string {
@@ -74,6 +75,36 @@ func (c Character) accessInventory() {
 		if (i+1)%perRow == 0 {
 			fmt.Println()
 			fmt.Println("-------------------------------------------------------------")
+		}
+	}
+
+	fmt.Println("\n")
+}
+
+func (c Character) accessInventory2() {
+	fmt.Println("\n")
+	fmt.Println("            		Inventory:")
+	fmt.Println("████████████████████████████████████████████████████████████")
+
+	slots := 16 // 4x4 cases fixes
+	perRow := 4
+
+	for i := 0; i < slots; i++ {
+		if i < len(c.inv) {
+			obj := c.inv[i]
+			// Affiche nom + quantité de l'objet
+			text := Espace(10, obj.nom, fmt.Sprintf("x%d", obj.quantity))
+			fmt.Printf("█ %s █", text)
+		} else {
+			// Case vide
+			text := Espace(10, "", "")
+			fmt.Printf("█ %s █", text)
+		}
+
+		// retour ligne après 4 cases
+		if (i+1)%perRow == 0 {
+			fmt.Println()
+			fmt.Println("████████████████████████████████████████████████████████████")
 		}
 	}
 
