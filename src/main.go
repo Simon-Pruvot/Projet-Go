@@ -18,9 +18,7 @@ type Character struct {
 
 func main() {
 	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"potion", 3}})
-
 	Simon.displayInfo()
-
 	Simon.accessInventory()
 	Simon.accessInventory2()
 }
@@ -70,14 +68,12 @@ func (c Character) accessInventory() {
 			text := Espace(10, "", "")
 			fmt.Printf("[ %s ]", text)
 		}
-
 		// retour ligne après 4 cases
 		if (i+1)%perRow == 0 {
 			fmt.Println()
 			fmt.Println("-------------------------------------------------------------")
 		}
 	}
-
 	fmt.Println("\n")
 }
 
@@ -100,13 +96,11 @@ func (c Character) accessInventory2() {
 			text := Espace(10, "", "")
 			fmt.Printf("█ %s █", text)
 		}
-
 		// retour ligne après 4 cases
 		if (i+1)%perRow == 0 {
 			fmt.Println()
 			fmt.Println("████████████████████████████████████████████████████████████")
 		}
 	}
-
 	fmt.Println("\n")
 }
