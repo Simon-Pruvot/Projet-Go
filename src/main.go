@@ -178,3 +178,7 @@ func (c *Character) takePot() {
 	}
 	fmt.Println("⚠️ No potion left!")
 }
+
+func (c *Character) Marchand() {
+
+}
