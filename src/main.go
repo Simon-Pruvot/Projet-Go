@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+
+	"github.com/eiannone/keyboard"
+)
 
 type Objects struct {
 	nom      string
@@ -17,12 +22,32 @@ type Character struct {
 }
 
 func main() {
-	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"potion", 3}})
+	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"HP potion", 3}})
 
-	Simon.displayInfo()
+	if err := keyboard.Open(); err != nil {
+		log.Fatal(err)
+	}
+	defer keyboard.Close()
 
-	Simon.accessInventory()
-	Simon.accessInventory2()
+	fmt.Println("Press I to open inventory, P to drink potion, Q to quit.")
+
+	for {
+		char, _, err := keyboard.GetKey()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		switch char {
+		case 'i', 'I':
+			Simon.accessInventory2() // or accessInventory()
+		case 'p', 'P':
+			Simon.takePot()
+		case 'q', 'Q':
+			fmt.Println("Goodbye!")
+			return
+		}
+
+	}
 }
 
 func Espace(esp int, chaine1 string, chaine2 string) string {
@@ -70,14 +95,12 @@ func (c Character) accessInventory() {
 			text := Espace(10, "", "")
 			fmt.Printf("[ %s ]", text)
 		}
-
 		// retour ligne après 4 cases
 		if (i+1)%perRow == 0 {
 			fmt.Println()
 			fmt.Println("-------------------------------------------------------------")
 		}
 	}
-
 	fmt.Println("\n")
 }
 
@@ -100,13 +123,26 @@ func (c Character) accessInventory2() {
 			text := Espace(10, "", "")
 			fmt.Printf("█ %s █", text)
 		}
-
 		// retour ligne après 4 cases
 		if (i+1)%perRow == 0 {
 			fmt.Println()
 			fmt.Println("████████████████████████████████████████████████████████████")
 		}
 	}
-
 	fmt.Println("\n")
+}
+
+func (c *Character) takePot() {
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == "HP potion" && c.inv[i].quantity > 0 {
+			c.inv[i].quantity--
+			c.Hp += 50
+			if c.Hp > c.HpMax {
+				c.Hp = c.HpMax
+			}
+			fmt.Println("🍷 You drank a potion! HP:", c.Hp, "/", c.HpMax)
+			return
+		}
+	}
+	fmt.Println("⚠️ No potion left!")
 }
