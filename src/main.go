@@ -29,7 +29,7 @@ func main() {
 	}
 	defer keyboard.Close()
 
-	fmt.Println("Press I to open inventory, P to drink potion, Q to quit.")
+	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -39,12 +39,38 @@ func main() {
 
 		switch char {
 		case 'i', 'I':
-			Simon.accessInventory2() // or accessInventory()
-		case 'p', 'P':
+			Simon.accessInventory2()
+		case 'h', 'H':
 			Simon.takePot()
 		case 'q', 'Q':
 			fmt.Println("Goodbye!")
 			return
+		case 'p', 'P':
+			PrintMenu()
+		MenuLoop:
+			for {
+				menuKey, _, err := keyboard.GetKey()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				switch menuKey {
+				case 'i', 'I':
+					Simon.accessInventory2()
+					break MenuLoop
+				case 'd', 'D':
+					Simon.displayInfo()
+					break MenuLoop
+				case 'q', 'Q':
+					fmt.Println("Closing menu...")
+					return
+				default:
+					fmt.Println("Invalid option. Please press I, D, or Q.")
+				}
+
+			}
+		case 'd', 'D':
+			Simon.displayInfo()
 		}
 
 	}
@@ -141,32 +167,7 @@ func (c *Character) takePot() {
 				c.Hp = c.HpMax
 			}
 			fmt.Println("🍷 You drank a potion! HP:", c.Hp, "/", c.HpMax)
-			fmt.Println(`
-        ▄▄▄▀▀▀▀▀▀▄▄
-        █▌        █▌
-        █▀        ▀█▌
-        █   ███ ██▌ █▌
-        ▀▄        ▄█
-         ▀▌▄     ▄▀
-            ▀▄▓▓▄▀▀
-            █▐█ ▓
-          ▄▀▀▐█  ▓▌
-          █  ▐█    ▀▓
-        ▄▀   ▐█      ▀▀▄
-      ▄▄▀    ▐▌         ▀
-             ▐▌
-             ▐▌
-             ▓▌
-            █▓▌
-          █  █▌
-        ▓▀   ▓▌
-      ▓▌     █▌
-    ▄█       █▌
-    █        █▌
-    █        ▓▌
-    █        ▓▌
-    ▀▀▀▀▀▀▀  ▀▀▀▀▀▀
-`)
+			fmt.Println(``)
 
 			// if no more left → remove it
 			if c.inv[i].quantity == 0 {
