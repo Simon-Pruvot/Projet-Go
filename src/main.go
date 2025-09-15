@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/eiannone/keyboard"
 )
@@ -22,17 +23,19 @@ type Character struct {
 }
 
 func main() {
-	hpPot := Objects{nom: "HP potion", quantity: 1}
-	poisonPot := Objects{nom: "Poison potion", quantity: 1}
-	swordCom := Objects{nom: "Sword C", quantity: 1}
-	swordRare := Objects{nom: "Sword B", quantity: 1}
-	swordLegend := Objects{nom: "Sword A", quantity: 1}
-	armorCom := Objects{nom: "Armor C", quantity: 1}
-	armorRare := Objects{nom: "Armor B", quantity: 1}
-	armorLegend := Objects{nom: "Armor A", quantity: 1}
-	oneyBag := Objects{nom: "Gold", quantity: 1}
+	/*
+		hpPot := Objects{nom: "HP potion", quantity: 1}
+		poisonPot := Objects{nom: "Poison potion", quantity: 1}
+		swordCom := Objects{nom: "Sword C", quantity: 1}
+		swordRare := Objects{nom: "Sword B", quantity: 1}
+		swordLegend := Objects{nom: "Sword A", quantity: 1}
+		armorCom := Objects{nom: "Armor C", quantity: 1}
+		armorRare := Objects{nom: "Armor B", quantity: 1}
+		armorLegend := Objects{nom: "Armor A", quantity: 1}
+		oneyBag := Objects{nom: "Gold", quantity: 1}
+	*/
 
-	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"HP potion", 3}})
+	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"HP potion", 3}, {"Potion de poison", 5}})
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
@@ -55,8 +58,8 @@ func main() {
 		case 'q', 'Q':
 			fmt.Println("Goodbye!")
 			return
-		case 'p', 'P':
-			PrintMenu()
+			/*case 'p', 'P':
+			PrintMenu()*/
 		MenuLoop:
 			for {
 				menuKey, _, err := keyboard.GetKey()
@@ -81,8 +84,10 @@ func main() {
 			}
 		case 'd', 'D':
 			Simon.displayInfo()
-		case 'b', 'B':
-			PrintMarchand()
+		/*case 'b', 'B':
+		PrintMarchand()*/
+		case '9', 'ç':
+			Simon.UsePoison()
 
 		}
 	}
@@ -210,7 +215,7 @@ func (c *Character) removeInventory(obj Objects) {
 	}
 }
 
-func (c *Character) Marchand() {
+/*func (c *Character) Marchand() {
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
 	}
@@ -240,4 +245,29 @@ func (c *Character) Marchand() {
 			PrintMenu()
 		}
 	}
+}*/
+
+func (c *Character) UsePoison() {
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
+			c.inv[i].quantity--
+			c.Hp -= 10
+			time.Sleep(1 * time.Second)
+			c.Hp -= 10
+			time.Sleep(1 * time.Second)
+			c.Hp -= 10
+			if c.Hp > c.HpMax {
+				c.Hp = c.HpMax
+			}
+			fmt.Println("You make damage to your enemi")
+			fmt.Println(``)
+
+			// if no more left → remove it
+			if c.inv[i].quantity == 0 {
+				c.inv = append(c.inv[:i], c.inv[i+1:]...)
+			}
+			return
+		}
+	}
+	fmt.Println("⚠️ No potion of poison left!")
 }
