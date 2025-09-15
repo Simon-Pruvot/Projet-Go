@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/eiannone/keyboard"
 )
@@ -20,22 +19,12 @@ type Character struct {
 	HpMax  int
 	Hp     int
 	inv    []Objects
+	Money  int
 }
 
 func main() {
-	/*
-		hpPot := Objects{nom: "HP potion", quantity: 1}
-		poisonPot := Objects{nom: "Poison potion", quantity: 1}
-		swordCom := Objects{nom: "Sword C", quantity: 1}
-		swordRare := Objects{nom: "Sword B", quantity: 1}
-		swordLegend := Objects{nom: "Sword A", quantity: 1}
-		armorCom := Objects{nom: "Armor C", quantity: 1}
-		armorRare := Objects{nom: "Armor B", quantity: 1}
-		armorLegend := Objects{nom: "Armor A", quantity: 1}
-		oneyBag := Objects{nom: "Gold", quantity: 1}
-	*/
 
-	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"HP potion", 3}, {"Potion de poison", 5}})
+	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"Potion de vie", 3}, {"Potion de poison", 5}}, 100)
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
@@ -58,8 +47,8 @@ func main() {
 		case 'q', 'Q':
 			fmt.Println("Goodbye!")
 			return
-			/*case 'p', 'P':
-			PrintMenu()*/
+		case 'p', 'P':
+			PrintMenu()
 		MenuLoop:
 			for {
 				menuKey, _, err := keyboard.GetKey()
@@ -84,8 +73,8 @@ func main() {
 			}
 		case 'd', 'D':
 			Simon.displayInfo()
-		/*case 'b', 'B':
-		PrintMarchand()*/
+		case 'b', 'B':
+			Simon.Marchand()
 		case '9', 'ç':
 			Simon.UsePoison()
 
@@ -101,8 +90,8 @@ func Espace(esp int, chaine1 string, chaine2 string) string {
 	return chaine1 + chaine2 + string(rune(127))
 }
 
-func initCharacter(nom string, classe string, lvl int, hpmax int, hp int, inv []Objects) Character {
-	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv}
+func initCharacter(nom string, classe string, lvl int, hpmax int, hp int, inv []Objects, money int) Character {
+	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: money}
 }
 
 func (c Character) displayInfo() {
@@ -177,7 +166,7 @@ func (c Character) accessInventory2() {
 
 func (c *Character) takePot() {
 	for i := 0; i < len(c.inv); i++ {
-		if c.inv[i].nom == "HP potion" && c.inv[i].quantity > 0 {
+		if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity > 0 {
 			c.inv[i].quantity--
 			c.Hp += 50
 			if c.Hp > c.HpMax {
@@ -215,13 +204,30 @@ func (c *Character) removeInventory(obj Objects) {
 	}
 }
 
-/*func (c *Character) Marchand() {
+func (c *Character) Marchand() {
+	//objects
+	hpPot := Objects{nom: "Potion de vie", quantity: 1}
+	poisonPot := Objects{nom: "Potion de poison", quantity: 1}
+	swordCom := Objects{nom: "Épée C", quantity: 1}
+	swordRare := Objects{nom: "Épée B", quantity: 1}
+	swordLegend := Objects{nom: "Épée A", quantity: 1}
+	armorCom := Objects{nom: "Armor C", quantity: 1}
+	armorRare := Objects{nom: "Armor B", quantity: 1}
+	armorLegend := Objects{nom: "Armor A", quantity: 1}
+	LivFeu := Objects{nom: "Livre de Sort : Boule de feu", quantity: 1}
+
+	//resurces
+	rock := Objects{nom: "Rock", quantity: 1}
+	wood := Objects{nom: "Wood", quantity: 1}
+	scrap := Objects{nom: "Scrap", quantity: 1}
+	armorLegend := Objects{nom: "Armor A", quantity: 1}
+
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
 	}
 	defer keyboard.Close()
 
-	fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7")
+	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -229,45 +235,209 @@ func (c *Character) removeInventory(obj Objects) {
 			log.Fatal(err)
 		}
 
+		fmt.Println("S: Sell || B: Buy")
 		switch char {
-		case '1', '&':
-			c.accessInventory2()
-		case '2', 'é':
-			c.takePot()
-		case '3', '"':
-			fmt.Println("Goodbye!")
-			return
-		case '5', '(':
-			PrintMenu()
-		case '5', '(':
-			PrintMenu()
-		case '5', '(':
-			PrintMenu()
+		case 'b', 'B':
+			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7, 8")
+			fmt.Println("Q to leave the marchant")
+
+			for {
+				char, _, err := keyboard.GetKey()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				switch char {
+				case '1', '&': // Acheter une potion de soin pour 2 Gold
+					if len(c.inv) < 1 {
+						c.addInventory(hpPot)
+					}
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity > 0 {
+						} else {
+							c.addInventory(hpPot)
+						}
+					}
+					if c.Money >= 3 {
+						c.Money -= 3
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Potion de vie" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(hpPot)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '2', 'é': // Acheter une potion de poison pour 3 Gold
+					if c.Money >= 6 {
+						c.Money -= 6
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Potion de poison" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(poisonPot)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '3', '"': // Acheter Sword C pour 10 Gold
+					if c.Money >= 10 {
+						c.Money -= 10
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Épée C" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(swordCom)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '5', '(': // Acheter Armor C pour 10 Gold
+					if c.Money >= 10 {
+						c.Money -= 10
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Armor C" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(armorCom)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '6', '-': // Acheter Sword B pour 20 Gold
+					if c.Money >= 20 {
+						c.Money -= 20
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Épée B" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(swordRare)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '7', 'è': // Acheter Armor B pour 20 Gold
+					if c.Money >= 20 {
+						c.Money -= 20
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Armor B" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(armorRare)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+				case '8', '_': // Acheter Armor B pour 20 Gold
+					if c.Money >= 25 {
+						c.Money -= 25
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Livre de Sort : Boule de feu" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(armorRare)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+				case 'q', 'Q':
+					return
+				}
+			}
+
+		case 's', 'S':
+			fmt.Println("Chose an item: 1, 2, 3, 5")
+			fmt.Println("Q to leave the marchant")
+
+			for {
+				char, _, err := keyboard.GetKey()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				switch char {
+				case '1', '&':
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
+						}
+					}
+				case '2', 'é': // Acheter une potion de poison pour 3 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
+						}
+					}
+
+				case '3', '"': // Acheter Sword C pour 10 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
+						}
+					}
+
+				case '5', '(': // Acheter Armor C pour 10 Gold
+					if c.Money >= 10 {
+						c.Money -= 10
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Armor C" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(armorCom)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '6', '-': // Acheter Sword B pour 20 Gold
+					if c.Money >= 20 {
+						c.Money -= 20
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Épée B" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(swordRare)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
+				case '7', 'è': // Acheter Armor B pour 20 Gold
+					if c.Money >= 20 {
+						c.Money -= 20
+						for i := 0; i < len(c.inv); i++ {
+							if c.inv[i].nom == "Armor B" {
+								c.inv[i].quantity++
+							} else {
+								c.addInventory(armorRare)
+							}
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+				case 'q', 'Q':
+					return
+				}
+			}
+
 		}
 	}
-}*/
-
-func (c *Character) UsePoison() {
-	for i := 0; i < len(c.inv); i++ {
-		if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
-			c.inv[i].quantity--
-			c.Hp -= 10
-			time.Sleep(1 * time.Second)
-			c.Hp -= 10
-			time.Sleep(1 * time.Second)
-			c.Hp -= 10
-			if c.Hp > c.HpMax {
-				c.Hp = c.HpMax
-			}
-			fmt.Println("You make damage to your enemi")
-			fmt.Println(``)
-
-			// if no more left → remove it
-			if c.inv[i].quantity == 0 {
-				c.inv = append(c.inv[:i], c.inv[i+1:]...)
-			}
-			return
-		}
-	}
-	fmt.Println("⚠️ No potion of poison left!")
 }
