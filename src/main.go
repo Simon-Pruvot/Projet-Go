@@ -117,11 +117,11 @@ func (c Character) displayInfo() {
 
 func (c Character) accessInventory() {
 	fmt.Println("\n")
-	fmt.Println("            		  		    Inventory:")
-	fmt.Println("----------------------------------------------------------------------------------------------------")
+	fmt.Println("            		  		   		 Inventory:")
+	fmt.Println("-----------------------------------------------------------------------------------------------------------------------------")
 
-	slots := 16 // 4x4 cases fixes
-	perRow := 4
+	slots := 10
+	perRow := 5
 
 	for i := 0; i < slots; i++ {
 		if i < len(c.inv) {
@@ -137,7 +137,7 @@ func (c Character) accessInventory() {
 		// retour ligne après 4 cases
 		if (i+1)%perRow == 0 {
 			fmt.Println()
-			fmt.Println("----------------------------------------------------------------------------------------------------")
+			fmt.Println("-----------------------------------------------------------------------------------------------------------------------------")
 		}
 	}
 	fmt.Println("\n")
@@ -148,8 +148,8 @@ func (c Character) accessInventory2() {
 	fmt.Println("            				    Inventory:")
 	fmt.Println("████████████████████████████████████████████████████████████████████████████████████████████████")
 
-	slots := 16 // 4x4 cases fixes
-	perRow := 4
+	slots := 10
+	perRow := 5
 
 	for i := 0; i < slots; i++ {
 		if i < len(c.inv) {
@@ -188,9 +188,19 @@ func (c *Character) takePot() {
 	fmt.Println("⚠️ No potion left!")
 }
 
+func (c *Character) canAddItem() bool {
+	if len(c.inv) >= 10 {
+		fmt.Println("⚠️ Inventaire plein ! Impossible d’ajouter plus d’objets.")
+		return false
+	}
+	return true
+}
+
 // Fonction pour ajouter un objet à l'inventaire
 func (c *Character) addInventory(obj Objects) {
-	c.inv = append(c.inv, obj)
+	if c.canAddItem() {
+		c.inv = append(c.inv, obj)
+	}
 }
 
 func (c *Character) removeInventory(obj Objects) {
