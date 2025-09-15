@@ -210,24 +210,61 @@ func (c *Character) Marchand() {
 	poisonPot := Objects{nom: "Potion de poison", quantity: 1}
 	swordCom := Objects{nom: "Épée C", quantity: 1}
 	swordRare := Objects{nom: "Épée B", quantity: 1}
-	swordLegend := Objects{nom: "Épée A", quantity: 1}
+	//swordLegend := Objects{nom: "Épée A", quantity: 1}
 	armorCom := Objects{nom: "Armor C", quantity: 1}
 	armorRare := Objects{nom: "Armor B", quantity: 1}
-	armorLegend := Objects{nom: "Armor A", quantity: 1}
+	//armorLegend := Objects{nom: "Armor A", quantity: 1}
 	LivFeu := Objects{nom: "Livre de Sort : Boule de feu", quantity: 1}
 
 	//resurces
 	rock := Objects{nom: "Rock", quantity: 1}
 	wood := Objects{nom: "Wood", quantity: 1}
 	scrap := Objects{nom: "Scrap", quantity: 1}
-	armorLegend := Objects{nom: "Armor A", quantity: 1}
+	FOL := Objects{nom: "Fourrure de Loup", quantity: 1}
+	PDT := Objects{nom: "Peau de Troll", quantity: 1}
+	CDS := Objects{nom: "Cuir de Sanglier", quantity: 1}
+	PDC := Objects{nom: "Plume de Corbeau", quantity: 1}
+
+	// Liste des objets à acheter
+	achats := []struct {
+		key   string
+		nom   string
+		price int
+	}{
+		{"1", "Potion de vie", 3},
+		{"2", "Potion de poison", 6},
+		{"3", "Épée C", 10},
+		{"5", "Armure C", 10},
+		{"6", "Épée B", 20},
+		{"7", "Armure B", 20},
+		{"8", "Livre de Sort : Boule de feu", 25},
+	}
+
+	// Liste des objets à vendre
+	ventes := []struct {
+		key   string
+		nom   string
+		price int
+	}{
+		{"a/A", "Rock", 1},
+		{"b/B", "Wood", 1},
+		{"c/C", "Scrap", 5},
+		{"d/D", "Fourrure de Loup", 4},
+		{"e/E", "Peau de Troll", 7},
+		{"f/F", "Cuir de Sanglier", 3},
+		{"g/G", "Plume de Corbeau", 1},
+		{"1", "Potion de vie", 1},
+		{"2", "Potion de poison", 1},
+		{"3", "Épée C", 5},
+		{"5", "Armure C", 5},
+		{"6", "Épée B", 10},
+		{"7", "Armure B", 10},
+	}
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
 	}
 	defer keyboard.Close()
-
-	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -235,7 +272,13 @@ func (c *Character) Marchand() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("S: Sell || B: Buy")
+		fmt.Println("\n===================================")
+		fmt.Println("Bienvenue chez le marchand !")
+		fmt.Println("A) Acheter")
+		fmt.Println("V) Vendre")
+		fmt.Println("Q) Quitter le marchand")
+		fmt.Println("===================================")
+
 		switch char {
 		case 'b', 'B':
 			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7, 8")
@@ -245,6 +288,23 @@ func (c *Character) Marchand() {
 				char, _, err := keyboard.GetKey()
 				if err != nil {
 					log.Fatal(err)
+				}
+
+				if char == 'a' || char == 'A' {
+					fmt.Println("\nObjets disponibles à l'achat :")
+					fmt.Println("    ______________________________")
+					fmt.Println("   / \\                             \\.")
+					fmt.Println("  |   |         Marchand           |.")
+					fmt.Println("   \\_ |                            |.")
+					for _, it := range achats {
+						fmt.Printf("     |   %s) %-25s %2d Gold |\n", it.key, it.nom, it.price)
+					}
+					fmt.Println("     |                            |.")
+					fmt.Println("     |   _________________________|___")
+					fmt.Println("     |  /                            /.")
+					fmt.Println("     \\_/dc__________________________/.")
+
+					fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour l’acheter, ou Q pour revenir.")
 				}
 
 				switch char {
@@ -369,6 +429,23 @@ func (c *Character) Marchand() {
 					log.Fatal(err)
 				}
 
+				if char == 'v' || char == 'V' {
+					fmt.Println("\nObjets que vous pouvez vendre :")
+					fmt.Println("    ______________________________")
+					fmt.Println("   / \\                             \\.")
+					fmt.Println("  |   |         Revente            |.")
+					fmt.Println("   \\_ |                            |.")
+					for _, it := range ventes {
+						fmt.Printf("     |   %s) %-25s %2d Gold |\n", it.key, it.nom, it.price)
+					}
+					fmt.Println("     |                            |.")
+					fmt.Println("     |   _________________________|___")
+					fmt.Println("     |  /                            /.")
+					fmt.Println("     \\_/dc__________________________/.")
+
+					fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour le vendre, ou Q pour revenir.")
+				}
+
 				switch char {
 				case '1', '&':
 					for i := 0; i < len(c.inv); i++ {
@@ -434,7 +511,94 @@ func (c *Character) Marchand() {
 							c.removeInventory(c.inv[i])
 						}
 					}
+
+					// Ressources
+				case 'a', 'A':
+					// Vendre Rock pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == rock.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
+						}
+						if c.inv[i].nom == rock.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
+				case 'b', 'B':
+					// Vendre Wood pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == wood.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
+						}
+						if c.inv[i].nom == wood.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
+				case 'c', 'C':
+					// Vendre Scrap pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == scrap.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money += 5
+						}
+						if c.inv[i].nom == scrap.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
+				case 'd', 'D':
+					// Vendre Fourrure de Loup pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == FOL.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money += 4
+						}
+						if c.inv[i].nom == FOL.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
+				case 'e', 'E':
+					// Vendre Peau de Troll pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == PDT.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money += 7
+						}
+						if c.inv[i].nom == PDT.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
+				case 'f', 'F':
+					// Vendre Cuir de Sanglier pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == CDS.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money += 3
+						}
+						if c.inv[i].nom == CDS.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
+				case 'g', 'G':
+					// Vendre Plume de Corbeau pour 1 Gold
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == PDC.nom && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
+						}
+						if c.inv[i].nom == PDC.nom && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
+					}
+
 				case 'q', 'Q':
+					fmt.Println("Au revoir !")
 					return
 				}
 			}
