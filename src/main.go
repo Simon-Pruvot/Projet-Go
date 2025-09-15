@@ -265,22 +265,37 @@ func (c *Character) Marchand() {
 		log.Fatal(err)
 	}
 	defer keyboard.Close()
+MarchandLoop:
 
 	for {
+		fmt.Println("\n===================================")
+		fmt.Println("Bienvenue chez le marchand !")
+		fmt.Println("B) Acheter")
+		fmt.Println("S) Vendre")
+		fmt.Println("Q) Quitter le marchand")
+		fmt.Println("===================================")
+
 		char, _, err := keyboard.GetKey()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println("\n===================================")
-		fmt.Println("Bienvenue chez le marchand !")
-		fmt.Println("A) Acheter")
-		fmt.Println("V) Vendre")
-		fmt.Println("Q) Quitter le marchand")
-		fmt.Println("===================================")
-
 		switch char {
 		case 'b', 'B':
+
+			fmt.Println("\nObjets disponibles à l'achat :")
+			fmt.Println("    ________________________________________________")
+			fmt.Println("   / \\                                               \\.")
+			fmt.Println("  |   |                   Marchand                   |.")
+			fmt.Println("   \\_ |                                              |.")
+			for _, it := range achats {
+				fmt.Printf("      |   %-4s %-28s %3d Gold |\n", it.key, it.nom, it.price)
+			}
+			fmt.Println("      |                                              |.")
+			fmt.Println("      |   ___________________________________________|")
+			fmt.Println("      |  /                                           /.")
+			fmt.Println("      \\_/__________________________________________/.")
+
 			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7, 8")
 			fmt.Println("Q to leave the marchant")
 
@@ -288,23 +303,6 @@ func (c *Character) Marchand() {
 				char, _, err := keyboard.GetKey()
 				if err != nil {
 					log.Fatal(err)
-				}
-
-				if char == 'a' || char == 'A' {
-					fmt.Println("\nObjets disponibles à l'achat :")
-					fmt.Println("    ______________________________")
-					fmt.Println("   / \\                             \\.")
-					fmt.Println("  |   |         Marchand           |.")
-					fmt.Println("   \\_ |                            |.")
-					for _, it := range achats {
-						fmt.Printf("     |   %s) %-25s %2d Gold |\n", it.key, it.nom, it.price)
-					}
-					fmt.Println("     |                            |.")
-					fmt.Println("     |   _________________________|___")
-					fmt.Println("     |  /                            /.")
-					fmt.Println("     \\_/dc__________________________/.")
-
-					fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour l’acheter, ou Q pour revenir.")
 				}
 
 				switch char {
@@ -415,11 +413,27 @@ func (c *Character) Marchand() {
 					}
 
 				case 'q', 'Q':
-					return
+					fmt.Println("Au revoir !")
+					break
 				}
 			}
 
 		case 's', 'S':
+		VenteLoop:
+			fmt.Println("\nObjets que vous pouvez vendre :")
+			fmt.Println("    _________________________________________")
+			fmt.Println("   / \\                                       \\.")
+			fmt.Println("  |   |               Revente                |.")
+			fmt.Println("   \\_ |                                      |.")
+			for _, it := range ventes {
+				fmt.Printf("      |  %-4s %-22s %2d Gold |\n", it.key, it.nom, it.price)
+			}
+			fmt.Println("      |                                      |.")
+			fmt.Println("      |   ___________________________________|")
+			fmt.Println("      |  /                                   /.")
+			fmt.Println("      \\_/___________________________________/.")
+
+			fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour le vendre, ou Q pour revenir.")
 			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7")
 			fmt.Println("Q to leave the marchant")
 
@@ -427,23 +441,6 @@ func (c *Character) Marchand() {
 				char, _, err := keyboard.GetKey()
 				if err != nil {
 					log.Fatal(err)
-				}
-
-				if char == 'v' || char == 'V' {
-					fmt.Println("\nObjets que vous pouvez vendre :")
-					fmt.Println("    ______________________________")
-					fmt.Println("   / \\                             \\.")
-					fmt.Println("  |   |         Revente            |.")
-					fmt.Println("   \\_ |                            |.")
-					for _, it := range ventes {
-						fmt.Printf("     |   %s) %-25s %2d Gold |\n", it.key, it.nom, it.price)
-					}
-					fmt.Println("     |                            |.")
-					fmt.Println("     |   _________________________|___")
-					fmt.Println("     |  /                            /.")
-					fmt.Println("     \\_/dc__________________________/.")
-
-					fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour le vendre, ou Q pour revenir.")
 				}
 
 				switch char {
@@ -599,9 +596,11 @@ func (c *Character) Marchand() {
 
 				case 'q', 'Q':
 					fmt.Println("Au revoir !")
-					return
+					break VenteLoop
 				}
 			}
+		case 'q', 'Q':
+			break MarchandLoop
 
 		}
 	}
