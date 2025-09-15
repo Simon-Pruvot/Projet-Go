@@ -347,19 +347,20 @@ func (c *Character) Marchand() {
 							if c.inv[i].nom == "Livre de Sort : Boule de feu" {
 								c.inv[i].quantity++
 							} else {
-								c.addInventory(armorRare)
+								c.addInventory(LivFeu)
 							}
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
+
 				case 'q', 'Q':
 					return
 				}
 			}
 
 		case 's', 'S':
-			fmt.Println("Chose an item: 1, 2, 3, 5")
+			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7")
 			fmt.Println("Q to leave the marchant")
 
 			for {
@@ -375,6 +376,9 @@ func (c *Character) Marchand() {
 							c.inv[i].quantity--
 							c.Money++
 						}
+						if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
 					}
 				case '2', 'é': // Acheter une potion de poison pour 3 Gold
 					for i := 0; i < len(c.inv); i++ {
@@ -382,56 +386,53 @@ func (c *Character) Marchand() {
 							c.inv[i].quantity--
 							c.Money++
 						}
+						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
 					}
 
 				case '3', '"': // Acheter Sword C pour 10 Gold
 					for i := 0; i < len(c.inv); i++ {
-						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
+						if c.inv[i].nom == "Épée C" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
 							c.Money++
+						}
+						if c.inv[i].nom == "Épée C" && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
 						}
 					}
 
 				case '5', '(': // Acheter Armor C pour 10 Gold
-					if c.Money >= 10 {
-						c.Money -= 10
-						for i := 0; i < len(c.inv); i++ {
-							if c.inv[i].nom == "Armor C" {
-								c.inv[i].quantity++
-							} else {
-								c.addInventory(armorCom)
-							}
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Armor C" && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
 						}
-					} else {
-						fmt.Println("Need More Gold")
+						if c.inv[i].nom == "Armor C" && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
 					}
 
 				case '6', '-': // Acheter Sword B pour 20 Gold
-					if c.Money >= 20 {
-						c.Money -= 20
-						for i := 0; i < len(c.inv); i++ {
-							if c.inv[i].nom == "Épée B" {
-								c.inv[i].quantity++
-							} else {
-								c.addInventory(swordRare)
-							}
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Épée B" && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
 						}
-					} else {
-						fmt.Println("Need More Gold")
+						if c.inv[i].nom == "Épée B" && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
 					}
 
 				case '7', 'è': // Acheter Armor B pour 20 Gold
-					if c.Money >= 20 {
-						c.Money -= 20
-						for i := 0; i < len(c.inv); i++ {
-							if c.inv[i].nom == "Armor B" {
-								c.inv[i].quantity++
-							} else {
-								c.addInventory(armorRare)
-							}
+					for i := 0; i < len(c.inv); i++ {
+						if c.inv[i].nom == "Armor B" && c.inv[i].quantity > 0 {
+							c.inv[i].quantity--
+							c.Money++
 						}
-					} else {
-						fmt.Println("Need More Gold")
+						if c.inv[i].nom == "Armor B" && c.inv[i].quantity == 0 {
+							c.removeInventory(c.inv[i])
+						}
 					}
 				case 'q', 'Q':
 					return
