@@ -22,6 +22,16 @@ type Character struct {
 }
 
 func main() {
+	hpPot := Objects{nom: "HP potion", quantity: 1}
+	poisonPot := Objects{nom: "Poison potion", quantity: 1}
+	swordCom := Objects{nom: "Sword C", quantity: 1}
+	swordRare := Objects{nom: "Sword B", quantity: 1}
+	swordLegend := Objects{nom: "Sword A", quantity: 1}
+	armorCom := Objects{nom: "Armor C", quantity: 1}
+	armorRare := Objects{nom: "Armor B", quantity: 1}
+	armorLegend := Objects{nom: "Armor A", quantity: 1}
+	oneyBag := Objects{nom: "Gold", quantity: 1}
+
 	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"HP potion", 3}})
 
 	if err := keyboard.Open(); err != nil {
@@ -71,8 +81,10 @@ func main() {
 			}
 		case 'd', 'D':
 			Simon.displayInfo()
-		}
+		case 'b', 'B':
+			PrintMarchand()
 
+		}
 	}
 }
 
@@ -179,6 +191,53 @@ func (c *Character) takePot() {
 	fmt.Println("⚠️ No potion left!")
 }
 
-func (c *Character) Marchand() {
+// Fonction pour ajouter un objet à l'inventaire
+func (c *Character) addInventory(obj Objects) {
+	c.inv = append(c.inv, obj)
+}
 
+func (c *Character) removeInventory(obj Objects) {
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == obj.nom {
+			c.inv[i].quantity--
+
+			// Si plus d’objets, on supprime l'entrée du slice
+			if c.inv[i].quantity <= 0 {
+				c.inv = append(c.inv[:i], c.inv[i+1:]...)
+			}
+			return // On sort après avoir trouvé l'objet
+		}
+	}
+}
+
+func (c *Character) Marchand() {
+	if err := keyboard.Open(); err != nil {
+		log.Fatal(err)
+	}
+	defer keyboard.Close()
+
+	fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7")
+
+	for {
+		char, _, err := keyboard.GetKey()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		switch char {
+		case '1', '&':
+			c.accessInventory2()
+		case '2', 'é':
+			c.takePot()
+		case '3', '"':
+			fmt.Println("Goodbye!")
+			return
+		case '5', '(':
+			PrintMenu()
+		case '5', '(':
+			PrintMenu()
+		case '5', '(':
+			PrintMenu()
+		}
+	}
 }
