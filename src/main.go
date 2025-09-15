@@ -25,11 +25,12 @@ type Character struct {
 	Hp     int
 	inv    []Objects
 	Money  int
+	Skills []string
 }
 
 func main() {
 
-	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"Potion de vie", 3}, {"Potion de poison", 5}}, 100)
+	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"Potion de vie", 3}, {"Potion de poison", 5}}, 100, []string{"Coup de poing"})
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
@@ -96,8 +97,8 @@ func Espace(esp int, chaine1 string, chaine2 string) string {
 	return chaine1 + chaine2 + string(rune(127))
 }
 
-func initCharacter(nom string, classe string, lvl int, hpmax int, hp int, inv []Objects, money int) Character {
-	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: money}
+func initCharacter(nom string, classe string, lvl int, hpmax int, hp int, inv []Objects, money int, skills []string) Character {
+	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: money, Skills: skills}
 }
 
 func (c Character) displayInfo() {
@@ -153,15 +154,12 @@ func (c Character) accessInventory2() {
 	for i := 0; i < slots; i++ {
 		if i < len(c.inv) {
 			obj := c.inv[i]
-			// Affiche nom + quantité de l'objet — bigger space now (20)
 			text := Espace(20, obj.nom, fmt.Sprintf("x%d", obj.quantity))
 			fmt.Printf("█ %s █", text)
 		} else {
-			// Case vide
 			text := Espace(20, "", "")
 			fmt.Printf("█ %s █", text)
 		}
-		// retour ligne après 4 cases
 		if (i+1)%perRow == 0 {
 			fmt.Println()
 			fmt.Println("████████████████████████████████████████████████████████████████████████████████████████████████")
@@ -181,7 +179,6 @@ func (c *Character) takePot() {
 			fmt.Println("🍷 You drank a potion! HP:", c.Hp, "/", c.HpMax)
 			fmt.Println(``)
 
-			// if no more left → remove it
 			if c.inv[i].quantity == 0 {
 				c.inv = append(c.inv[:i], c.inv[i+1:]...)
 			}
@@ -201,11 +198,10 @@ func (c *Character) removeInventory(obj Objects) {
 		if c.inv[i].nom == obj.nom {
 			c.inv[i].quantity--
 
-			// Si plus d’objets, on supprime l'entrée du slice
 			if c.inv[i].quantity <= 0 {
 				c.inv = append(c.inv[:i], c.inv[i+1:]...)
 			}
-			return // On sort après avoir trouvé l'objet
+			return
 		}
 	}
 }
@@ -351,7 +347,7 @@ MarchandLoop:
 				}
 
 				switch char {
-				case '1', '&': // Acheter potion de vie
+				case '1', '&':
 					if c.Money >= 3 {
 						c.Money -= 3
 						added := false
@@ -369,7 +365,7 @@ MarchandLoop:
 						fmt.Println("Need More Gold")
 					}
 
-				case '2', 'é': // Acheter potion de poison
+				case '2', 'é':
 					if c.Money >= 6 {
 						c.Money -= 6
 						added := false
@@ -387,7 +383,7 @@ MarchandLoop:
 						fmt.Println("Need More Gold")
 					}
 
-				case '3', '"': // Acheter Sword C
+				case '3', '"':
 					if c.Money >= 10 {
 						c.Money -= 10
 						added := false
@@ -405,7 +401,7 @@ MarchandLoop:
 						fmt.Println("Need More Gold")
 					}
 
-				case '5', '(': // Acheter Armor C
+				case '5', '(':
 					if c.Money >= 10 {
 						c.Money -= 10
 						added := false
@@ -423,7 +419,7 @@ MarchandLoop:
 						fmt.Println("Need More Gold")
 					}
 
-				case '6', '-': // Acheter Sword B
+				case '6', '-':
 					if c.Money >= 20 {
 						c.Money -= 20
 						added := false
@@ -441,7 +437,7 @@ MarchandLoop:
 						fmt.Println("Need More Gold")
 					}
 
-				case '7', 'è': // Acheter Armor B
+				case '7', 'è':
 					if c.Money >= 20 {
 						c.Money -= 20
 						added := false
@@ -459,7 +455,7 @@ MarchandLoop:
 						fmt.Println("Need More Gold")
 					}
 
-				case '8', '_': // Acheter Livre de Sort
+				case '8', '_':
 					if c.Money >= 25 {
 						c.Money -= 25
 						added := false
@@ -510,7 +506,7 @@ MarchandLoop:
 			)
 
 			// print building left and vente list right
-			lines := CombineColumnsToLines([][]string{building, contentV}, 4) // returns []string
+			lines := CombineColumnsToLines([][]string{building, contentV}, 4)
 			FullScreenDrawCentered(lines)
 
 		VenteLoop:
@@ -531,7 +527,7 @@ MarchandLoop:
 							c.removeInventory(c.inv[i])
 						}
 					}
-				case '2', 'é': // Acheter une potion de poison pour 3 Gold
+				case '2', 'é':
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -542,7 +538,7 @@ MarchandLoop:
 						}
 					}
 
-				case '3', '"': // Acheter Sword C pour 10 Gold
+				case '3', '"':
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Épée C" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -553,7 +549,7 @@ MarchandLoop:
 						}
 					}
 
-				case '5', '(': // Acheter Armor C pour 10 Gold
+				case '5', '(':
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Armor C" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -564,7 +560,7 @@ MarchandLoop:
 						}
 					}
 
-				case '6', '-': // Acheter Sword B pour 20 Gold
+				case '6', '-':
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Épée B" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -575,7 +571,7 @@ MarchandLoop:
 						}
 					}
 
-				case '7', 'è': // Acheter Armor B pour 20 Gold
+				case '7', 'è':
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Armor B" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -588,7 +584,6 @@ MarchandLoop:
 
 					// Ressources
 				case 'a', 'A':
-					// Vendre Rock pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == rock.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -600,7 +595,6 @@ MarchandLoop:
 					}
 
 				case 'b', 'B':
-					// Vendre Wood pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == wood.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -612,7 +606,6 @@ MarchandLoop:
 					}
 
 				case 'c', 'C':
-					// Vendre Scrap pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == scrap.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -624,7 +617,6 @@ MarchandLoop:
 					}
 
 				case 'd', 'D':
-					// Vendre Fourrure de Loup pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == FOL.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -636,7 +628,6 @@ MarchandLoop:
 					}
 
 				case 'e', 'E':
-					// Vendre Peau de Troll pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == PDT.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -648,7 +639,6 @@ MarchandLoop:
 					}
 
 				case 'f', 'F':
-					// Vendre Cuir de Sanglier pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == CDS.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -660,7 +650,6 @@ MarchandLoop:
 					}
 
 				case 'g', 'G':
-					// Vendre Plume de Corbeau pour 1 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == PDC.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
@@ -683,7 +672,6 @@ MarchandLoop:
 	}
 }
 
-// PrintColumns prints columns side-by-side.
 // cols: slice of columns (each column is a []string).
 // distance: number of spaces between columns (last parameter).
 func PrintColumns(cols [][]string, distance int) {
@@ -700,7 +688,6 @@ func PrintColumns(cols [][]string, distance int) {
 		}
 	}
 
-	// compute max number of lines
 	maxLines := 0
 	for _, col := range cols {
 		if len(col) > maxLines {
@@ -710,16 +697,13 @@ func PrintColumns(cols [][]string, distance int) {
 
 	sep := strings.Repeat(" ", distance)
 
-	// print row by row
 	for r := 0; r < maxLines; r++ {
 		for ci, col := range cols {
 			cell := ""
 			if r < len(col) {
 				cell = col[r]
 			}
-			// left-align to column width
 			fmt.Printf("%-*s", widths[ci], cell)
-			// print separator except after last column
 			if ci < len(cols)-1 {
 				fmt.Print(sep)
 			}
@@ -743,10 +727,7 @@ func truncateRunes(s string, n int) string {
 	return string(r[:n-3]) + "..."
 }
 
-// CombineColumnsToLines returns lines composed of columns side-by-side.
-// cols: slice of columns (each column is []string). distance: spaces between columns.
 func CombineColumnsToLines(cols [][]string, distance int) []string {
-	// compute width for each column (rune-aware)
 	widths := make([]int, len(cols))
 	for ci, col := range cols {
 		for _, line := range col {
@@ -755,7 +736,6 @@ func CombineColumnsToLines(cols [][]string, distance int) []string {
 			}
 		}
 	}
-	// max lines
 	maxLines := 0
 	for _, col := range cols {
 		if len(col) > maxLines {
@@ -771,7 +751,6 @@ func CombineColumnsToLines(cols [][]string, distance int) []string {
 			if r < len(col) {
 				cell = col[r]
 			}
-			// left-align to column width
 			parts = append(parts, fmt.Sprintf("%-*s", widths[ci], cell))
 		}
 		out = append(out, strings.Join(parts, sep))
@@ -780,17 +759,13 @@ func CombineColumnsToLines(cols [][]string, distance int) []string {
 }
 
 // FullScreenDrawCentered clears terminal and prints lines centered horizontally & vertically.
-// It pads the screen to terminal height so nothing else is visible.
 func FullScreenDrawCentered(lines []string) {
-	// hide cursor
 	fmt.Print("\033[?25l")
-	// clear screen + move cursor to top-left
 	fmt.Print("\033[2J\033[H")
 
 	// get terminal size
 	w, h, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
-		// fallback: print lines normally
 		for _, ln := range lines {
 			fmt.Println(ln)
 		}
@@ -798,26 +773,21 @@ func FullScreenDrawCentered(lines []string) {
 		return
 	}
 
-	// ensure lines fit; truncate any line longer than width
 	for i, ln := range lines {
 		if utf8.RuneCountInString(ln) > w {
 			lines[i] = truncateRunes(ln, w)
 		}
 	}
 
-	// vertical centering: compute top padding
 	if len(lines) > h {
-		// too many lines → just print the first h lines (can't center)
 		lines = lines[:h]
 	}
 	topPad := (h - len(lines)) / 2
 
-	// print top padding
 	for i := 0; i < topPad; i++ {
 		fmt.Println()
 	}
 
-	// print each line centered horizontally
 	for _, ln := range lines {
 		rlen := utf8.RuneCountInString(ln)
 		leftPad := 0
@@ -830,13 +800,58 @@ func FullScreenDrawCentered(lines []string) {
 		fmt.Println(ln)
 	}
 
-	// bottom padding to fill screen
 	printed := topPad + len(lines)
 	for printed < h {
 		fmt.Println()
 		printed++
 	}
 
-	// show cursor again
 	fmt.Print("\033[?25h")
+}
+
+func (c *Character) isDead() {
+	if c.Hp <= 0 {
+		fmt.Println("U DEAD")
+		c.Hp = c.HpMax / 2
+	}
+}
+
+func (c *Character) spellBook(spell string) {
+	for _, s := range c.Skills {
+		if s == spell {
+			fmt.Println("⚠️ Vous connaissez déjà le sort :", spell)
+			return
+		}
+	}
+	c.Skills = append(c.Skills, spell)
+	fmt.Println("✨ Nouveau sort appris :", spell)
+}
+
+// --- Utilisation des objets dans l'inventaire ---
+func (c *Character) useItem(objName string) {
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == objName && c.inv[i].quantity > 0 {
+			if objName == "Potion de vie" {
+				c.takePot()
+				return
+			}
+			if objName == "Livre de Sort : Boule de feu" {
+				c.spellBook("Boule de feu")
+				c.inv[i].quantity--
+				if c.inv[i].quantity == 0 {
+					c.inv = append(c.inv[:i], c.inv[i+1:]...)
+				}
+				return
+			}
+		}
+	}
+	fmt.Println("⚠️ Objet introuvable :", objName)
+}
+
+func (c Character) displaySkills() {
+	fmt.Println("📖 Liste de vos sorts :")
+	for _, s := range c.Skills {
+		fmt.Println(" -", s)
+	}
+	fmt.Println()
 }
