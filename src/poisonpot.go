@@ -10,14 +10,20 @@ func (c *Character) UsePoison() {
 		if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
 			c.inv[i].quantity--
 			c.Hp -= 10
+			fmt.Println("You make damage to your enemi")
+			fmt.Println(``)
 			time.Sleep(1 * time.Second)
 			c.Hp -= 10
+			fmt.Println("You make damage to your enemi")
+			fmt.Println(``)
 			time.Sleep(1 * time.Second)
 			c.Hp -= 10
+			fmt.Println("You make damage to your enemi")
+			fmt.Println(``)
 			if c.Hp > c.HpMax {
 				c.Hp = c.HpMax
 			}
-			fmt.Println("You make damage to your enemi")
+			fmt.Println("End of poison")
 			fmt.Println(``)
 
 			// if no more left → remove it
