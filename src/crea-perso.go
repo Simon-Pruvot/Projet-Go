@@ -4,18 +4,19 @@ import (
 	"fmt"
 )
 
-func prenom() {
-	var Nom string
-	inserez := []string{
-		"",
-		" _____                                    _              _____           _ ",
-		"|     |___ ___ ___ ___ ___ ___    _ _ ___| |_ ___ ___   |   | |___ _____|_|",
-		"|-   -|   |_ -| -_|  _| -_|- _|  | | | . |  _|  _| -_|  | | | | . |     |_ ",
-		"|_____|_|_|___|___|_| |___|___|   \\_/|___|_| |_| |___|  |_|___|___|_|_|_|_|",
-	}
-	inserez = inserez
-	fmt.Scanln(&Nom)
-	fmt.Printf("Hi %s!\n", Nom)
+type Objects struct {
+	nom      string
+	quantity int
+}
+
+type Character struct {
+	Nom    string
+	Classe string
+	Lvl    int
+	HpMax  int
+	Hp     int
+	inv    []Objects
+	Money  int
 }
 
 func class() {
@@ -80,7 +81,7 @@ func class() {
 		"",
 		"",
 		"",
-		"   ,====,",
+		",====,",
 		"  c , _,{",
 		"  /\\  @ )                 __",
 		" /  ^~~^\\          <=.,__/ '}=",
@@ -118,19 +119,35 @@ func class() {
 
 	fmt.Println(`
 
-                                                                                                             
+
    _ _____ _ ___                          _ _____               _                          _ _____     _     
   / |   __| |  _|___                     / |  |  |_ _ _____ ___|_|___                     / |   | |___|_|___ 
  / /|   __| |  _| -_|                   / /|     | | |     | .'| |   |                   / /| | | | .'| |   |
 |_/ |_____|_|_| |___|                  |_/ |__|__|___|_|_|_|__,|_|_|_|                  |_/ |_|___|__,|_|_|_|
                                                                                                              	                                                                                           
-                                                                                    
-	`)
+
+`)
 }
 
-Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"Potion de vie", 3}, {"Potion de poison", 5}}, 100)
-
-func perso() {
+func perso() Character {
+	var Nom string
+	fmt.Println(`
+		"",
+		" _____                                    _              _____           _ ",
+		"|     |___ ___ ___ ___ ___ ___    _ _ ___| |_ ___ ___   |   | |___ _____|_|",
+		"|-   -|   |_ -| -_|  _| -_|- _|  | | | . |  _|  _| -_|  | | | | . |     |_ ",
+		"|_____|_|_|___|___|_| |___|___|   \\_/|___|_| |_| |___|  |_|___|___|_|_|_|_|",
+	`)
 	fmt.Scanln(&Nom)
 	fmt.Printf("Hi %s!\n", Nom)
+	var classe string
+	fmt.Scanln(&classe)
+	fmt.Printf("Hi %s!\n", classe)
+	if classe == "/Elfe" {
+		return Character{Nom, "Elfe", 1, 80, 40, []Objects{}, 100}
+	} else if classe == "/Humain" {
+		return Character{Nom, "Humain", 1, 100, 50, []Objects{}, 100}
+	} else {
+		return Character{Nom, "Nain", 1, 120, 60, []Objects{}, 100}
+	}
 }

@@ -77,10 +77,6 @@ func Espace(esp int, chaine1 string, chaine2 string) string {
 	return chaine1 + chaine2 + string(rune(127))
 }
 
-func initCharacter(nom string, classe string, lvl int, hpmax int, hp int, inv []Objects, money int) Character {
-	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: money}
-}
-
 func (c Character) displayInfo() {
 	fmt.Println("\n")
 	fmt.Println("------------------------------")
