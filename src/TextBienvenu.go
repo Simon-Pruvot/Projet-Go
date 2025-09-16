@@ -42,7 +42,7 @@ func TextBienvenu() {
 	var choosestart string
 	fmt.Scanln(&choosestart)
 	if choosestart == "/start" {
-		perso()
+		classe()
 	} else if choosestart == "/difficulty" {
 		Menu()
 	}

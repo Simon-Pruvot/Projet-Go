@@ -4,22 +4,7 @@ import (
 	"fmt"
 )
 
-type Objects struct {
-	nom      string
-	quantity int
-}
-
-type Character struct {
-	Nom    string
-	Classe string
-	Lvl    int
-	HpMax  int
-	Hp     int
-	inv    []Objects
-	Money  int
-}
-
-func class() {
+func classe() {
 	fmt.Println(`
 	"",	                                                                                           
  _____ _       _     _                            _                  _                 _ 
@@ -124,12 +109,14 @@ func class() {
   / |   __| |  _|___                     / |  |  |_ _ _____ ___|_|___                     / |   | |___|_|___ 
  / /|   __| |  _| -_|                   / /|     | | |     | .'| |   |                   / /| | | | .'| |   |
 |_/ |_____|_|_| |___|                  |_/ |__|__|___|_|_|_|__,|_|_|_|                  |_/ |_|___|__,|_|_|_|
-                                                                                                             	                                                                                           
-
-`)
+                                                                                                            `)
+	var classe string
+	fmt.Scanln(&classe)
+	fmt.Printf("Hi %s!\n", classe)
+	Perso(classe)
 }
 
-func perso() Character {
+func Perso(classe string) Character {
 	var Nom string
 	fmt.Println(`
 		"",
@@ -140,14 +127,12 @@ func perso() Character {
 	`)
 	fmt.Scanln(&Nom)
 	fmt.Printf("Hi %s!\n", Nom)
-	var classe string
-	fmt.Scanln(&classe)
-	fmt.Printf("Hi %s!\n", classe)
-	if classe == "/Elfe" {
+	switch classe {
+	case "/Elfe":
 		return Character{Nom, "Elfe", 1, 80, 40, []Objects{}, 100}
-	} else if classe == "/Humain" {
+	case "/Humain":
 		return Character{Nom, "Humain", 1, 100, 50, []Objects{}, 100}
-	} else {
+	default:
 		return Character{Nom, "Nain", 1, 120, 60, []Objects{}, 100}
 	}
 }

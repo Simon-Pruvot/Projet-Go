@@ -18,7 +18,7 @@ func main() {
 
 	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
-	player := perso()
+	player := Perso()
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -78,7 +78,7 @@ func Espace(esp int, chaine1 string, chaine2 string) string {
 }
 
 func (c Character) displayInfo() {
-	fmt.Println("\n")
+	fmt.Println("")
 	fmt.Println("------------------------------")
 	fmt.Println("------------------------------")
 	fmt.Println("\tNom : " + c.Nom)
@@ -88,11 +88,11 @@ func (c Character) displayInfo() {
 	fmt.Println("\tHp :", c.Hp)
 	fmt.Println("------------------------------")
 	fmt.Println("------------------------------")
-	fmt.Println("\n")
+	fmt.Println("")
 }
 
 func (c Character) accessInventory() {
-	fmt.Println("\n")
+	fmt.Println("")
 	fmt.Println("            		Inventory:")
 	fmt.Println("-------------------------------------------------------------")
 
@@ -116,11 +116,11 @@ func (c Character) accessInventory() {
 			fmt.Println("-------------------------------------------------------------")
 		}
 	}
-	fmt.Println("\n")
+	fmt.Println("")
 }
 
 func (c Character) accessInventory2() {
-	fmt.Println("\n")
+	fmt.Println("")
 	fmt.Println("            		Inventory:")
 	fmt.Println("████████████████████████████████████████████████████████████")
 
@@ -144,7 +144,7 @@ func (c Character) accessInventory2() {
 			fmt.Println("████████████████████████████████████████████████████████████")
 		}
 	}
-	fmt.Println("\n")
+	fmt.Println("")
 }
 
 func (c *Character) takePot() {
