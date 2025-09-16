@@ -4,11 +4,6 @@ import (
 	"fmt"
 )
 
-func main() {
-	prenom()
-	class()
-}
-
 func prenom() {
 	var Nom string
 	inserez := []string{

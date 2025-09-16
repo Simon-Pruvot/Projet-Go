@@ -14,7 +14,7 @@ func PrintMenu() {
 (__  _)                                                                 (__  _)
 (_ ___)                                                                 (_ ___)
 (__  _)                                                                 (__  _)
-( _ __)          Afficher les informations du personnage (C)            ( _ __)
+( _ __)          Afficher les informations du personnage (D)            ( _ __)
 (__  _)             Accéder au contenu de l’inventaire (I)              (__  _)
 (_ ___)                          Quitter (Q)                            (_ ___)
 (__  _)                                                                 (__  _)
