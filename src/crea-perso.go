@@ -85,7 +85,7 @@ func class() {
 		"",
 		"",
 		"",
-		",====,",
+		"   ,====,",
 		"  c , _,{",
 		"  /\\  @ )                 __",
 		" /  ^~~^\\          <=.,__/ '}=",
@@ -131,4 +131,11 @@ func class() {
                                                                                                              	                                                                                           
                                                                                     
 	`)
+}
+
+Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"Potion de vie", 3}, {"Potion de poison", 5}}, 100)
+
+func perso() {
+	fmt.Scanln(&Nom)
+	fmt.Printf("Hi %s!\n", Nom)
 }

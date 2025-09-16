@@ -4,10 +4,6 @@ import (
 	"fmt"
 )
 
-func main() {
-	Menu()
-}
-
 func Menu() {
 	hand := []string{
 

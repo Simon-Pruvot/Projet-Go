@@ -7,24 +7,9 @@ import (
 	"github.com/eiannone/keyboard"
 )
 
-type Objects struct {
-	nom      string
-	quantity int
-}
-
-type Character struct {
-	Nom    string
-	Classe string
-	Lvl    int
-	HpMax  int
-	Hp     int
-	inv    []Objects
-	Money  int
-}
-
 func main() {
-
-	Simon := initCharacter("Simon", "Elfe", 1, 100, 40, []Objects{{"Potion de vie", 3}, {"Potion de poison", 5}}, 100)
+	//J'appelle la fonction de l'écran de départ
+	TextBienvenu()
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
@@ -32,6 +17,8 @@ func main() {
 	defer keyboard.Close()
 
 	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
+
+	player := perso()
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -41,9 +28,9 @@ func main() {
 
 		switch char {
 		case 'i', 'I':
-			Simon.accessInventory2()
+			player.accessInventory2()
 		case 'h', 'H':
-			Simon.takePot()
+			player.takePot()
 		case 'q', 'Q':
 			fmt.Println("Goodbye!")
 			return
@@ -58,10 +45,10 @@ func main() {
 
 				switch menuKey {
 				case 'i', 'I':
-					Simon.accessInventory2()
+					player.accessInventory2()
 					break MenuLoop
 				case 'd', 'D':
-					Simon.displayInfo()
+					player.displayInfo()
 					break MenuLoop
 				case 'q', 'Q':
 					fmt.Println("Closing menu...")
@@ -72,11 +59,11 @@ func main() {
 
 			}
 		case 'd', 'D':
-			Simon.displayInfo()
+			player.displayInfo()
 		case 'b', 'B':
-			Simon.Marchand()
+			player.Marchand()
 		case '9', 'ç':
-			Simon.UsePoison()
+			player.UsePoison()
 
 		}
 	}
