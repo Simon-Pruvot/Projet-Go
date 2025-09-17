@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func Menu() {
+func Menu() string {
 	hand := []string{
 
 		"              _",
@@ -85,4 +85,14 @@ func Menu() {
 |__|  |__,|___|_|_|___|_|  |_/ |___|__,|___|_  |            |__|__|__,|_| |___|___|___|_| |___|_|  |_/ |_|_|__,|_| |___|
                                            |___|                                                              
 	`)
+
+	var diff string
+	fmt.Scanln(&diff)
+	if diff == "/easy" {
+		return diff
+	} else if diff == "/hard" {
+		return diff
+	} else {
+		return Menu()
+	}
 }
