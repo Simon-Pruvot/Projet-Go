@@ -25,6 +25,7 @@ type Character struct {
 	InventoryUpgrades int
 	Mana              int
 	ManaMax           int
+	XP                int
 }
 
 type Monster struct {

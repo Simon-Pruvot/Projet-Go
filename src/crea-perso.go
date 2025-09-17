@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func classe() Character {
+func CreateClasse() Character {
 	fmt.Println(`
 	"",	                                                                                           
  _____ _       _     _                            _                  _                 _ 
@@ -114,7 +114,7 @@ func classe() Character {
 	fmt.Scanln(&class)
 	if class != "/elfe" && class != "/humain" && class != "/nain" || class != "/ELFE" && class != "/HUMAIN" && class != "/NAIN" {
 	} else {
-		return classe()
+		return CreateClasse()
 	}
 
 	fmt.Printf("Hi %s!\n", class)
@@ -122,7 +122,6 @@ func classe() Character {
 }
 
 func Perso(classe string) Character {
-	var Nom string
 	fmt.Println(`
 		"",
 		" _____                                    _              _____           _ ",
@@ -130,16 +129,18 @@ func Perso(classe string) Character {
 		"|-   -|   |_ -| -_|  _| -_|- _|  | | | . |  _|  _| -_|  | | | | . |     |_ ",
 		"|_____|_|_|___|___|_| |___|___|  \\_/|___|_| |_| |___|  |_|___|___|_|_|_|_|",
 	`)
+	var Nom string
 	fmt.Scanln(&Nom)
 	fmt.Printf("Hi %s!\n", Nom)
 
 	switch classe {
-	case "/Elfe":
+	case "/Elfe", "/elfe", "ELFE":
 		return initCharacter(Nom, "Elfe", 1, 80, 80, []Objects{}, []string{}, Equipment{})
-	case "/Humain":
+	case "/Humain", "/humain", "/HUMAIN":
 		return initCharacter(Nom, "Humain", 1, 100, 100, []Objects{}, []string{}, Equipment{})
-	default:
+	case "/Nain", "/nain", "/NAIN":
 		return initCharacter(Nom, "Nain", 1, 120, 120, []Objects{}, []string{}, Equipment{})
+	default:
+		return CreateClasse()
 	}
-
 }
