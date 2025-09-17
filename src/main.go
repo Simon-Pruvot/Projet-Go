@@ -188,6 +188,20 @@ func (c *Character) canAddItem() bool {
 	return true
 }
 
+func initCharacter(nom string, classe string, lvl int, hpmax int, hp int, inv []Objects, skills Skills, equipment Equipment) Character {
+	return Character{
+		Nom:       nom,
+		Classe:    classe,
+		Lvl:       lvl,
+		HpMax:     hpmax,
+		Hp:        hp,
+		Inv:       inv,
+		Money:     100,
+		Skills:    skills,
+		Equipment: equipment,
+	}
+}
+
 func (c *Character) Marchand() {
 	building := []string{
 		"=========================================",
