@@ -21,8 +21,6 @@ func main() {
 	}
 	defer keyboard.Close()
 
-	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
-
 	player := classe()
 
 	if chosendif == "/start" {
@@ -31,6 +29,7 @@ func main() {
 		player.Hp = player.Hp / 2
 	} else if chosendif == "/easy" {
 	}
+	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -40,7 +39,7 @@ func main() {
 
 		switch char {
 		case 'i', 'I':
-			player.accessInventory2()
+			player.accessInventory()
 		case 'h', 'H':
 			player.takePot()
 		case 'q', 'Q':
@@ -57,7 +56,7 @@ func main() {
 
 				switch menuKey {
 				case 'i', 'I':
-					player.accessInventory2()
+					player.accessInventory()
 					break MenuLoop
 				case 'd', 'D':
 					player.displayInfo()
@@ -104,59 +103,23 @@ func (c Character) displayInfo() {
 }
 
 func (c Character) accessInventory() {
-	fmt.Println("")
-	fmt.Println("            		Inventory:")
-	fmt.Println("-------------------------------------------------------------")
+	fmt.Println("\n")
+	fmt.Println("            		  		   		 Inventory:")
+	fmt.Println("-----------------------------------------------------------------------------------------------------------------------------")
 
-	slots := 16 // 4x4 cases fixes
-	perRow := 4
-
-	for i := 0; i < slots; i++ {
-		if i < len(c.inv) {
-			obj := c.inv[i]
-			// Affiche nom + quantité de l'objet
-			text := Espace(10, obj.nom, fmt.Sprintf("x%d", obj.quantity))
-			fmt.Printf("[ %s ]", text)
-		} else {
-			// Case vide
-			text := Espace(10, "", "")
-			fmt.Printf("[ %s ]", text)
-		}
-		// retour ligne après 4 cases
-		if (i+1)%perRow == 0 {
-			fmt.Println()
-			fmt.Println("-------------------------------------------------------------")
-		}
-	}
-	fmt.Println("")
-}
-
-func (c Character) accessInventory2() {
-	fmt.Println("")
-	fmt.Println("            		Inventory:")
-	fmt.Println("████████████████████████████████████████████████████████████")
-
-	slots := 16 // 4x4 cases fixes
-	perRow := 4
+	slots := 10
+	perRow := 5
 
 	for i := 0; i < slots; i++ {
 		if i < len(c.inv) {
-			obj := c.inv[i]
-			// Affiche nom + quantité de l'objet
-			text := Espace(10, obj.nom, fmt.Sprintf("x%d", obj.quantity))
-			fmt.Printf("█ %s █", text)
-		} else {
-			// Case vide
-			text := Espace(10, "", "")
-			fmt.Printf("█ %s █", text)
-		}
-		// retour ligne après 4 cases
-		if (i+1)%perRow == 0 {
-			fmt.Println()
-			fmt.Println("████████████████████████████████████████████████████████████")
+			// retour ligne après 4 cases
+			if (i+1)%perRow == 0 {
+				fmt.Println()
+				fmt.Println("-----------------------------------------------------------------------------------------------------------------------------")
+			}
 		}
 	}
-	fmt.Println("")
+	fmt.Println("\n")
 }
 
 func (c *Character) takePot() {
