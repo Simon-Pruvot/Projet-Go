@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func Menu() {
+func Menu1() {
 	hand := []string{
 		"",
 		"		:⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶:",
