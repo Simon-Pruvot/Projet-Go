@@ -4,11 +4,7 @@ import (
 	"fmt"
 )
 
-func main() {
-	Menu()
-}
-
-func Menu() {
+func Menu5() {
 	man := []string{
 		"",
 		"",

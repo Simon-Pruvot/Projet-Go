@@ -13,6 +13,11 @@ import (
 )
 
 func main() {
+	// Objets globaux utilisables dans Marchand + Forgeron
+	swordLegend := Objects{nom: "Épée A", quantity: 1}
+	armorLegend := Objects{nom: "Armor A", quantity: 1}
+	potionLegend := Objects{nom: "Potion Rage", quantity: 1}
+
 	//J'appelle la fonction de l'écran de départ
 	chosendif := TextBienvenu()
 
@@ -75,7 +80,8 @@ func main() {
 			player.Marchand()
 		case '9', 'ç':
 			player.UsePoison()
-
+		case 'f', 'F':
+			player.Forgeron(swordLegend, armorLegend, potionLegend)
 		}
 	}
 }
@@ -853,4 +859,98 @@ func FullScreenDrawCentered(lines []string) {
 
 	// show cursor again
 	fmt.Print("\033[?25h")
+}
+
+func (c *Character) Forgeron(swordLegend, armorLegend, potionLegend Objects) {
+	// ressources requises
+	reqs := map[string]map[string]int{
+		"Épée A": {
+			"Minerai de fer": 3,
+			"Bois":           1,
+		},
+		"Armor A": {
+			"Peau de Troll":    2,
+			"Fourrure de Loup": 3,
+		},
+		"Potion Légendaire": {
+			"Herbe magique":   2,
+			"Champignon rare": 1,
+		},
+	}
+
+	content := []string{
+		"",
+		"Bienvenue chez le Forgeron ⚒️",
+		"Objets que vous pouvez fabriquer (5 Gold chacun) :",
+		"  1 - Épée A",
+		"  2 - Armor A",
+		"  3 - Potion Légendaire",
+		"",
+		"Appuyez sur 1,2,3 pour fabriquer, ou Q pour quitter.",
+	}
+
+	FullScreenDrawCentered(content)
+
+ForgeronLoop:
+	for {
+		char, _, err := keyboard.GetKey()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		switch char {
+		case '1':
+			c.craftItem(swordLegend, reqs[swordLegend.nom])
+		case '2':
+			c.craftItem(armorLegend, reqs[armorLegend.nom])
+		case '3':
+			c.craftItem(potionLegend, reqs[potionLegend.nom])
+		case 'q', 'Q':
+			fmt.Println("👋 Le forgeron vous salue !")
+			break ForgeronLoop
+		}
+	}
+}
+
+// Fonction utilitaire pour fabriquer un item
+func (c *Character) craftItem(item Objects, req map[string]int) {
+	if c.Money < 5 {
+		fmt.Println("💰 Vous n’avez pas assez d’or pour fabriquer cet objet !")
+		return
+	}
+
+	// Vérification des ressources
+	for res, qte := range req {
+		found := false
+		for _, inv := range c.inv {
+			if inv.nom == res && inv.quantity >= qte {
+				found = true
+				break
+			}
+		}
+		if !found {
+			fmt.Printf("⚠️ Ressource manquante : %s (besoin de %d)\n", res, qte)
+			return
+		}
+	}
+
+	// Retrait des ressources
+	for res, qte := range req {
+		for i := 0; i < len(c.inv); i++ {
+			if c.inv[i].nom == res {
+				c.inv[i].quantity -= qte
+				if c.inv[i].quantity <= 0 {
+					c.inv = append(c.inv[:i], c.inv[i+1:]...)
+				}
+				break
+			}
+		}
+	}
+
+	// Retrait de l’or
+	c.Money -= 5
+
+	// Ajout de l’objet
+	c.addInventory(item)
+	fmt.Printf("✅ Vous avez fabriqué : %s\n", item.nom)
 }
