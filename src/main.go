@@ -117,7 +117,7 @@ func (c Character) accessInventory() {
 	for i := 0; i < slots; i++ {
 		item := "[ empty ]"
 		if i < len(c.inv) {
-			item = c.inv[i].Name // or however you store item name
+			item = c.inv[i].nom // or however you store item name
 		}
 		cols[i%perRow] = append(cols[i%perRow], item)
 	}
