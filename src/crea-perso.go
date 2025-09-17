@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func classe() {
+func classe() Character {
 	fmt.Println(`
 	"",	                                                                                           
  _____ _       _     _                            _                  _                 _ 
@@ -113,7 +113,7 @@ func classe() {
 	var classe string
 	fmt.Scanln(&classe)
 	fmt.Printf("Hi %s!\n", classe)
-	Perso(classe)
+	return Perso(classe)
 }
 
 func Perso(classe string) Character {
@@ -123,7 +123,7 @@ func Perso(classe string) Character {
 		" _____                                    _              _____           _ ",
 		"|     |___ ___ ___ ___ ___ ___    _ _ ___| |_ ___ ___   |   | |___ _____|_|",
 		"|-   -|   |_ -| -_|  _| -_|- _|  | | | . |  _|  _| -_|  | | | | . |     |_ ",
-		"|_____|_|_|___|___|_| |___|___|   \\_/|___|_| |_| |___|  |_|___|___|_|_|_|_|",
+		"|_____|_|_|___|___|_| |___|___|  \\_/|___|_| |_| |___|  |_|___|___|_|_|_|_|",
 	`)
 	fmt.Scanln(&Nom)
 	fmt.Printf("Hi %s!\n", Nom)

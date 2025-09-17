@@ -3,8 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+
+	"strings"
+	"unicode/utf8"
 
 	"github.com/eiannone/keyboard"
+	"golang.org/x/term"
 )
 
 func main() {
@@ -18,7 +23,7 @@ func main() {
 
 	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
-	player := Perso()
+	player := classe()
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -229,13 +234,13 @@ func (c *Character) Marchand() {
 		nom   string
 		price int
 	}{
-		{"a/A", "Rock", 1},
-		{"b/B", "Wood", 1},
-		{"c/C", "Scrap", 5},
-		{"d/D", "Fourrure de Loup", 4},
-		{"e/E", "Peau de Troll", 7},
-		{"f/F", "Cuir de Sanglier", 3},
-		{"g/G", "Plume de Corbeau", 1},
+		{"a", "Rock", 1},
+		{"b", "Wood", 1},
+		{"c", "Scrap", 5},
+		{"d", "Fourrure de Loup", 4},
+		{"e", "Peau de Troll", 7},
+		{"f", "Cuir de Sanglier", 3},
+		{"G", "Plume de Corbeau", 1},
 		{"1", "Potion de vie", 1},
 		{"2", "Potion de poison", 1},
 		{"3", "Épée C", 5},
@@ -588,4 +593,209 @@ func (c *Character) Marchand() {
 
 		}
 	}
+}
+
+func (c *Character) isDead() {
+	if c.Hp <= 0 {
+		fmt.Println("U DEAD")
+		c.Hp = c.HpMax / 2
+	}
+}
+
+func (c *Character) spellBook(spell string) {
+	for _, s := range c.Skills {
+		if s == spell {
+			fmt.Println("⚠️ Vous connaissez déjà le sort :", spell)
+			return
+		}
+	}
+	c.Skills = append(c.Skills, spell)
+	fmt.Println("✨ Nouveau sort appris :", spell)
+}
+
+// --- Utilisation des objets dans l'inventaire ---
+func (c *Character) useItem(objName string) {
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == objName && c.inv[i].quantity > 0 {
+			if objName == "Potion de vie" {
+				c.takePot()
+				return
+			}
+			if objName == "Livre de Sort : Boule de feu" {
+				c.spellBook("Boule de feu")
+				c.inv[i].quantity--
+				if c.inv[i].quantity == 0 {
+					c.inv = append(c.inv[:i], c.inv[i+1:]...)
+				}
+				return
+			}
+		}
+	}
+	fmt.Println("⚠️ Objet introuvable :", objName)
+}
+
+func (c Character) displaySkills() {
+	fmt.Println("📖 Liste de vos sorts :")
+	for _, s := range c.Skills {
+		fmt.Println(" -", s)
+	}
+	fmt.Println()
+}
+
+// PrintColumns prints columns side-by-side.
+// cols: slice of columns (each column is a []string).
+// distance: number of spaces between columns (last parameter).
+func PrintColumns(cols [][]string, distance int) {
+	if distance < 0 {
+		distance = 0
+	}
+	// compute width for each column (rune-aware)
+	widths := make([]int, len(cols))
+	for ci, col := range cols {
+		for _, line := range col {
+			if l := utf8.RuneCountInString(line); l > widths[ci] {
+				widths[ci] = l
+			}
+		}
+	}
+
+	// compute max number of lines
+	maxLines := 0
+	for _, col := range cols {
+		if len(col) > maxLines {
+			maxLines = len(col)
+		}
+	}
+
+	sep := strings.Repeat(" ", distance)
+
+	// print row by row
+	for r := 0; r < maxLines; r++ {
+		for ci, col := range cols {
+			cell := ""
+			if r < len(col) {
+				cell = col[r]
+			}
+			// left-align to column width
+			fmt.Printf("%-*s", widths[ci], cell)
+			// print separator except after last column
+			if ci < len(cols)-1 {
+				fmt.Print(sep)
+			}
+		}
+		fmt.Println()
+	}
+}
+
+// truncateRunes returns the first n runes of s (safe with utf8), adds "..." if truncated
+func truncateRunes(s string, n int) string {
+	if n <= 0 {
+		return ""
+	}
+	if utf8.RuneCountInString(s) <= n {
+		return s
+	}
+	r := []rune(s)
+	if n <= 3 {
+		return string(r[:n])
+	}
+	return string(r[:n-3]) + "..."
+}
+
+// CombineColumnsToLines returns lines composed of columns side-by-side.
+// cols: slice of columns (each column is []string). distance: spaces between columns.
+func CombineColumnsToLines(cols [][]string, distance int) []string {
+	// compute width for each column (rune-aware)
+	widths := make([]int, len(cols))
+	for ci, col := range cols {
+		for _, line := range col {
+			if l := utf8.RuneCountInString(line); l > widths[ci] {
+				widths[ci] = l
+			}
+		}
+	}
+	// max lines
+	maxLines := 0
+	for _, col := range cols {
+		if len(col) > maxLines {
+			maxLines = len(col)
+		}
+	}
+	sep := strings.Repeat(" ", distance)
+	out := make([]string, 0, maxLines)
+	for r := 0; r < maxLines; r++ {
+		var parts []string
+		for ci, col := range cols {
+			cell := ""
+			if r < len(col) {
+				cell = col[r]
+			}
+			// left-align to column width
+			parts = append(parts, fmt.Sprintf("%-*s", widths[ci], cell))
+		}
+		out = append(out, strings.Join(parts, sep))
+	}
+	return out
+}
+
+// FullScreenDrawCentered clears terminal and prints lines centered horizontally & vertically.
+// It pads the screen to terminal height so nothing else is visible.
+func FullScreenDrawCentered(lines []string) {
+	// hide cursor
+	fmt.Print("\033[?25l")
+	// clear screen + move cursor to top-left
+	fmt.Print("\033[2J\033[H")
+
+	// get terminal size
+	w, h, err := term.GetSize(int(os.Stdout.Fd()))
+	if err != nil {
+		// fallback: print lines normally
+		for _, ln := range lines {
+			fmt.Println(ln)
+		}
+		fmt.Print("\033[?25h")
+		return
+	}
+
+	// ensure lines fit; truncate any line longer than width
+	for i, ln := range lines {
+		if utf8.RuneCountInString(ln) > w {
+			lines[i] = truncateRunes(ln, w)
+		}
+	}
+
+	// vertical centering: compute top padding
+	if len(lines) > h {
+		// too many lines → just print the first h lines (can't center)
+		lines = lines[:h]
+	}
+	topPad := (h - len(lines)) / 2
+
+	// print top padding
+	for i := 0; i < topPad; i++ {
+		fmt.Println()
+	}
+
+	// print each line centered horizontally
+	for _, ln := range lines {
+		rlen := utf8.RuneCountInString(ln)
+		leftPad := 0
+		if w > rlen {
+			leftPad = (w - rlen) / 2
+		}
+		if leftPad > 0 {
+			fmt.Print(strings.Repeat(" ", leftPad))
+		}
+		fmt.Println(ln)
+	}
+
+	// bottom padding to fill screen
+	printed := topPad + len(lines)
+	for printed < h {
+		fmt.Println()
+		printed++
+	}
+
+	// show cursor again
+	fmt.Print("\033[?25h")
 }

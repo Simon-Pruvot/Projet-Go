@@ -13,4 +13,5 @@ type Character struct {
 	Hp     int
 	inv    []Objects
 	Money  int
+	Skills []string
 }
