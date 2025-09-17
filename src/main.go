@@ -192,6 +192,40 @@ func initCharacter(nom, classe string, lvl, hpmax, hp int, inv []Objects, skills
 	return Character{nom, classe, lvl, hpmax, hp, inv, 100, skills, equipment}
 }
 
+// Equip allows to equip an object in the right slot
+func (c *Character) Equip(item Objects, slot string) {
+	switch slot {
+	case "chapeau":
+		c.Equipment.Chapeau = &item
+	case "tunique":
+		c.Equipment.Tunique = &item
+	case "bottes":
+		c.Equipment.Bottes = &item
+	default:
+		fmt.Println("⚠️ Slot inconnu :", slot)
+	}
+}
+
+// DisplayEquipment shows current equipment
+func (c Character) DisplayEquipment() {
+	fmt.Println("🛡️ Équipement actuel :")
+	if c.Equipment.Chapeau != nil {
+		fmt.Println("  Chapeau :", c.Equipment.Chapeau.Nom)
+	} else {
+		fmt.Println("  Chapeau : Aucun")
+	}
+	if c.Equipment.Tunique != nil {
+		fmt.Println("  Tunique :", c.Equipment.Tunique.Nom)
+	} else {
+		fmt.Println("  Tunique : Aucune")
+	}
+	if c.Equipment.Bottes != nil {
+		fmt.Println("  Bottes :", c.Equipment.Bottes.Nom)
+	} else {
+		fmt.Println("  Bottes : Aucune")
+	}
+}
+
 func (c *Character) Marchand() {
 	building := []string{
 		"=========================================",
