@@ -89,37 +89,47 @@ func Espace(esp int, chaine1 string, chaine2 string) string {
 }
 
 func (c Character) displayInfo() {
-	fmt.Println("")
-	fmt.Println("------------------------------")
-	fmt.Println("------------------------------")
-	fmt.Println("\tNom : " + c.Nom)
-	fmt.Println("\tClasse : " + c.Classe)
-	fmt.Println("\tLvl :", c.Lvl)
-	fmt.Println("\tHp Max :", c.HpMax)
-	fmt.Println("\tHp :", c.Hp)
-	fmt.Println("------------------------------")
-	fmt.Println("------------------------------")
-	fmt.Println("")
+	lines := []string{
+		"------------------------------",
+		"------------------------------",
+		fmt.Sprintf("Nom : %s", c.Nom),
+		fmt.Sprintf("Classe : %s", c.Classe),
+		fmt.Sprintf("Lvl : %d", c.Lvl),
+		fmt.Sprintf("Hp Max : %d", c.HpMax),
+		fmt.Sprintf("Hp : %d", c.Hp),
+		"------------------------------",
+		"------------------------------",
+	}
+
+	FullScreenDrawCentered(lines)
 }
 
 func (c Character) accessInventory() {
-	fmt.Println("\n")
-	fmt.Println("            		  		   		 Inventory:")
-	fmt.Println("-----------------------------------------------------------------------------------------------------------------------------")
-
 	slots := 10
 	perRow := 5
 
-	for i := 0; i < slots; i++ {
-		if i < len(c.inv) {
-			// retour ligne après 4 cases
-			if (i+1)%perRow == 0 {
-				fmt.Println()
-				fmt.Println("-----------------------------------------------------------------------------------------------------------------------------")
-			}
-		}
+	// Create rows (each row = []string of slots)
+	var cols [][]string
+	for row := 0; row < perRow; row++ {
+		cols = append(cols, []string{})
 	}
-	fmt.Println("\n")
+
+	for i := 0; i < slots; i++ {
+		item := "[ empty ]"
+		if i < len(c.inv) {
+			item = c.inv[i].Name // or however you store item name
+		}
+		cols[i%perRow] = append(cols[i%perRow], item)
+	}
+
+	// Format inventory lines
+	lines := []string{"Inventory:", strings.Repeat("-", 80)}
+	grid := CombineColumnsToLines(cols, 4) // 4 spaces between slots
+	lines = append(lines, grid...)
+	lines = append(lines, strings.Repeat("-", 80))
+
+	// Center display
+	FullScreenDrawCentered(lines)
 }
 
 func (c *Character) takePot() {

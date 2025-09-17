@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Menu() {
+func Menu2() {
 	Clear()
 	fmt.Println(`
 
