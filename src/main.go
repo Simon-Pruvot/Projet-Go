@@ -18,7 +18,7 @@ func main() {
 
 	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
-	player := Perso()
+	player := Character()
 
 	for {
 		char, _, err := keyboard.GetKey()

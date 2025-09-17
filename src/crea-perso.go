@@ -127,6 +127,7 @@ func Perso(classe string) Character {
 	`)
 	fmt.Scanln(&Nom)
 	fmt.Printf("Hi %s!\n", Nom)
+
 	switch classe {
 	case "/Elfe":
 		return Character{Nom, "Elfe", 1, 80, 40, []Objects{}, 100}
