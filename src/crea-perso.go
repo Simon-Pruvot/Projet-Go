@@ -110,10 +110,15 @@ func classe() Character {
  / /|   __| |  _| -_|                   / /|     | | |     | .'| |   |                   / /| | | | .'| |   |
 |_/ |_____|_|_| |___|                  |_/ |__|__|___|_|_|_|__,|_|_|_|                  |_/ |_|___|__,|_|_|_|
                                                                                                             `)
-	var classe string
-	fmt.Scanln(&classe)
-	fmt.Printf("Hi %s!\n", classe)
-	return Perso(classe)
+	var class string
+	fmt.Scanln(&class)
+	if class != "/elfe" && class != "/humain" && class != "/nain" || class != "/ELFE" && class != "/HUMAIN" && class != "/NAIN" {
+	} else {
+		return classe()
+	}
+
+	fmt.Printf("Hi %s!\n", class)
+	return Perso(class)
 }
 
 func Perso(classe string) Character {
