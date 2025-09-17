@@ -27,6 +27,7 @@ func main() {
 	defer keyboard.Close()
 
 	player := classe()
+	baseHpMax := player.HpMax
 
 	if chosendif == "/start" {
 	} else if chosendif == "/hard" {
@@ -44,7 +45,7 @@ func main() {
 
 		switch char {
 		case 'i', 'I':
-			player.accessInventory()
+			player.accessInventory(baseHpMax)
 		case 'h', 'H':
 			player.takePot()
 		case 'q', 'Q':
@@ -61,7 +62,7 @@ func main() {
 
 				switch menuKey {
 				case 'i', 'I':
-					player.accessInventory()
+					player.accessInventory(baseHpMax)
 					break MenuLoop
 				case 'd', 'D':
 					player.displayInfo()
@@ -110,32 +111,82 @@ func (c Character) displayInfo() {
 	FullScreenDrawCentered(lines)
 }
 
-func (c Character) accessInventory() {
+func (c *Character) accessInventory(baseHpMax int) {
 	slots := 10
 	perRow := 5
 
-	// Create rows (each row = []string of slots)
-	var cols [][]string
-	for row := 0; row < perRow; row++ {
-		cols = append(cols, []string{})
-	}
-
-	for i := 0; i < slots; i++ {
-		item := "[ empty ]"
-		if i < len(c.inv) {
-			item = c.inv[i].nom // or however you store item name
+BoucleInventaire:
+	for {
+		// --- Affichage de l'inventaire ---
+		var cols [][]string
+		for row := 0; row < perRow; row++ {
+			cols = append(cols, []string{})
 		}
-		cols[i%perRow] = append(cols[i%perRow], item)
+
+		for i := 0; i < slots; i++ {
+			item := "[ vide ]"
+			if i < len(c.inv) {
+				item = fmt.Sprintf("[%d] %s", i, c.inv[i].nom)
+			}
+			cols[i%perRow] = append(cols[i%perRow], item)
+		}
+
+		lines := []string{"🎒 Inventaire :", strings.Repeat("-", 80)}
+		grid := CombineColumnsToLines(cols, 4) // 4 espaces entre colonnes
+		lines = append(lines, grid...)
+		lines = append(lines, strings.Repeat("-", 80))
+		lines = append(lines,
+			"Options : (U)tiliser | (E)quiper | (R)etirer | (Q)uitter",
+		)
+
+		FullScreenDrawCentered(lines)
+
+		// --- Gestion des entrées ---
+		char, _, err := keyboard.GetKey()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		switch char {
+		case 'q', 'Q':
+			break BoucleInventaire
+			fmt.Println("✅ Inventoire Quite :")
+
+		case 'u', 'U':
+			index := demanderIndex(len(c.inv))
+			if index >= 0 {
+				// TODO: logique d'utilisation (potion, grimoire, etc.)
+				fmt.Println("✅ Utilisé :", c.inv[index].nom)
+			}
+
+		case 'e', 'E':
+			index := demanderIndex(len(c.inv))
+			if index >= 0 {
+				// TODO: demander le slot exact (chapeau/tunique/bottes)
+				c.Equip(c.inv[index], "chapeau", baseHpMax)
+				fmt.Println("✅ Équipé :", c.inv[index].nom)
+			}
+
+		case 'r', 'R':
+			index := demanderIndex(len(c.inv))
+			if index >= 0 {
+				fmt.Println("🗑️ Retiré :", c.inv[index].nom)
+				c.inv = append(c.inv[:index], c.inv[index+1:]...)
+			}
+		}
 	}
+}
 
-	// Format inventory lines
-	lines := []string{"Inventory:", strings.Repeat("-", 80)}
-	grid := CombineColumnsToLines(cols, 4) // 4 spaces between slots
-	lines = append(lines, grid...)
-	lines = append(lines, strings.Repeat("-", 80))
-
-	// Center display
-	FullScreenDrawCentered(lines)
+// Fonction pour demander un index
+func demanderIndex(max int) int {
+	fmt.Printf("👉 Choisissez l’index de l’objet (0-%d) : ", max-1)
+	var index int
+	_, err := fmt.Scanf("%d\n", &index)
+	if err != nil || index < 0 || index >= max {
+		fmt.Println("❌ Index invalide")
+		return -1
+	}
+	return index
 }
 
 func (c *Character) takePot() {
@@ -181,28 +232,82 @@ func (c *Character) removeInventory(obj Objects) {
 }
 
 func (c *Character) canAddItem() bool {
-	if len(c.inv) >= 10 {
+	if len(c.inv) >= c.MaxInventorySlots {
 		fmt.Println("⚠️ Inventaire plein ! Impossible d’ajouter plus d’objets.")
 		return false
 	}
 	return true
 }
 
+func (c *Character) upgradeInventorySlot() {
+	if c.InventoryUpgrades >= 3 {
+		fmt.Println("⚠️ Vous avez déjà atteint le maximum d’augmentations (3).")
+		return
+	}
+
+	c.MaxInventorySlots += 10
+	c.InventoryUpgrades++
+	fmt.Printf("✅ Inventaire augmenté ! Nouvelle capacité : %d slots (utilisations restantes : %d)\n",
+		c.MaxInventorySlots, 3-c.InventoryUpgrades)
+}
+
 func initCharacter(nom, classe string, lvl, hpmax, hp int, inv []Objects, skills []string, equipment Equipment) Character {
-	return Character{nom, classe, lvl, hpmax, hp, inv, 100, skills, equipment}
+	return Character{nom, classe, lvl, hpmax, hp, inv, 100, skills, equipment, 10, 0}
 }
 
 // Equip allows to equip an object in the right slot
-func (c *Character) Equip(item Objects, slot string) {
+func (c *Character) Equip(item Objects, slot string, baseHpMax int) {
+	// Remove from inventory
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == item.nom {
+			c.inv = append(c.inv[:i], c.inv[i+1:]...)
+			break
+		}
+	}
+
+	// Handle replacement
+	var replaced *Objects
 	switch slot {
 	case "chapeau":
+		replaced = c.Equipment.Chapeau
 		c.Equipment.Chapeau = &item
 	case "tunique":
+		replaced = c.Equipment.Tunique
 		c.Equipment.Tunique = &item
 	case "bottes":
+		replaced = c.Equipment.Bottes
 		c.Equipment.Bottes = &item
 	default:
 		fmt.Println("⚠️ Slot inconnu :", slot)
+		return
+	}
+
+	// Return old equipment to inventory if replaced
+	if replaced != nil {
+		c.inv = append(c.inv, *replaced)
+	}
+
+	// Recalculate max HP
+	c.updateHpMax(baseHpMax)
+}
+
+// updateHpMax recalculates HpMax from baseHpMax + equipment bonuses
+func (c *Character) updateHpMax(baseHpMax int) {
+	c.HpMax = baseHpMax
+
+	if c.Equipment.Chapeau != nil && c.Equipment.Chapeau.nom == "Chapeau de l’aventurier" {
+		c.HpMax += 10
+	}
+	if c.Equipment.Tunique != nil && c.Equipment.Tunique.nom == "Tunique de l’aventurier" {
+		c.HpMax += 25
+	}
+	if c.Equipment.Bottes != nil && c.Equipment.Bottes.nom == "Bottes de l’aventurier" {
+		c.HpMax += 15
+	}
+
+	// Adjust current HP if it exceeds new max
+	if c.Hp > c.HpMax {
+		c.Hp = c.HpMax
 	}
 }
 
@@ -210,17 +315,17 @@ func (c *Character) Equip(item Objects, slot string) {
 func (c Character) DisplayEquipment() {
 	fmt.Println("🛡️ Équipement actuel :")
 	if c.Equipment.Chapeau != nil {
-		fmt.Println("  Chapeau :", c.Equipment.Chapeau.Nom)
+		fmt.Println("  Chapeau :", c.Equipment.Chapeau.nom)
 	} else {
 		fmt.Println("  Chapeau : Aucun")
 	}
 	if c.Equipment.Tunique != nil {
-		fmt.Println("  Tunique :", c.Equipment.Tunique.Nom)
+		fmt.Println("  Tunique :", c.Equipment.Tunique.nom)
 	} else {
 		fmt.Println("  Tunique : Aucune")
 	}
 	if c.Equipment.Bottes != nil {
-		fmt.Println("  Bottes :", c.Equipment.Bottes.Nom)
+		fmt.Println("  Bottes :", c.Equipment.Bottes.nom)
 	} else {
 		fmt.Println("  Bottes : Aucune")
 	}
@@ -294,6 +399,7 @@ func (c *Character) Marchand() {
 		{"6", "Épée B", 20},
 		{"7", "Armure B", 20},
 		{"8", "Livre de Sort : Boule de feu", 25},
+		{"9", "Augmentation d’inventaire", 30},
 	}
 
 	// Liste des objets à vendre
@@ -487,7 +593,13 @@ MarchandLoop:
 					} else {
 						fmt.Println("Need More Gold")
 					}
-
+				case '9': // Augmentation d’inventaire
+					if c.Money >= 30 {
+						c.Money -= 30
+						c.upgradeInventorySlot()
+					} else {
+						fmt.Println("💰 Pas assez d’or pour l’augmentation !")
+					}
 				case 'q', 'Q':
 					fmt.Println("Au revoir !")
 					break AchatLoop
