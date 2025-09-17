@@ -23,4 +23,13 @@ type Character struct {
 	Equipment         Equipment
 	MaxInventorySlots int
 	InventoryUpgrades int
+	Mana              int
+	ManaMax           int
+}
+
+type Monster struct {
+	Nom   string
+	HpMax int
+	Hp    int
+	Atk   int
 }

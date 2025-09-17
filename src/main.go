@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 
 	"strings"
@@ -83,6 +84,9 @@ func main() {
 			player.UsePoison()
 		case 'f', 'F':
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
+		case 't', 'T':
+			player.trainingFight(baseHpMax)
+
 		}
 	}
 }
@@ -241,18 +245,15 @@ func (c *Character) canAddItem() bool {
 
 func (c *Character) upgradeInventorySlot() {
 	if c.InventoryUpgrades >= 3 {
-		fmt.Println("⚠️ Vous avez déjà atteint le maximum d’augmentations (3).")
+		fmt.Println("⚠️ Maximum d'augmentations atteint.")
 		return
 	}
-
 	c.MaxInventorySlots += 10
 	c.InventoryUpgrades++
-	fmt.Printf("✅ Inventaire augmenté ! Nouvelle capacité : %d slots (utilisations restantes : %d)\n",
-		c.MaxInventorySlots, 3-c.InventoryUpgrades)
+	fmt.Printf("Capacité d'inventaire augmentée : %d (restant %d)\n", c.MaxInventorySlots, 3-c.InventoryUpgrades)
 }
-
 func initCharacter(nom, classe string, lvl, hpmax, hp int, inv []Objects, skills []string, equipment Equipment) Character {
-	return Character{nom, classe, lvl, hpmax, hp, inv, 100, skills, equipment, 10, 0}
+	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: 100, Skills: skills, Equipment: equipment, MaxInventorySlots: 10, InventoryUpgrades: 0, Mana: 30, ManaMax: 30}
 }
 
 // Equip allows to equip an object in the right slot
@@ -1104,4 +1105,182 @@ func (c *Character) craftItem(item Objects, req map[string]int) {
 	c.addInventory(item)
 	CreaftingAnim()
 	fmt.Printf("✅ Vous avez fabriqué : %s\n", item.nom)
+}
+
+func initGoblin() Monster {
+	return Monster{
+		Nom:   "Gobelin d'entraînement",
+		HpMax: 40,
+		Hp:    40, // égal à HpMax
+		Atk:   5,
+	}
+}
+
+// goblinPattern applique l'attaque du gobelin sur le joueur.
+func goblinPattern(g *Monster, c *Character, turn int) {
+	damage := g.Atk
+	if turn%3 == 0 { // tous les 3 tours -> 200%
+		damage = g.Atk * 2
+	}
+	c.Hp -= damage
+	if c.Hp < 0 {
+		c.Hp = 0
+	}
+	fmt.Printf("%s inflige à %s %d de dégâts\n", g.Nom, c.Nom, damage)
+	fmt.Printf("%s PV : %d / %d\n\n", c.Nom, c.Hp, c.HpMax)
+}
+
+func characterTurn(c *Character, m *Monster) bool {
+	// recharge mana à chaque tour (selon ta règle)
+	c.Mana = c.ManaMax
+
+	fmt.Println("=== Votre tour ===")
+	fmt.Printf("PV: %d / %d | Mana: %d / %d\n", c.Hp, c.HpMax, c.Mana, c.ManaMax)
+	fmt.Println("Options : (A)ttaquer | (S)péciale | (M)agie | (I)nventaire")
+	fmt.Print("Choix : ")
+
+	var input string
+	_, err := fmt.Scanln(&input)
+	if err != nil {
+		// si lecture échoue, considérer comme pass
+		fmt.Println("Entrée invalide.")
+		return false
+	}
+
+	switch strings.ToLower(input) {
+	case "a":
+		// attaque basique : 5 dégâts, coût 10 mana
+		if c.Mana < 10 {
+			fmt.Println("Pas assez de mana pour attaque basique.")
+			return false
+		}
+		c.Mana -= 10
+		m.Hp -= 5
+		if m.Hp < 0 {
+			m.Hp = 0
+		}
+		fmt.Printf("%s utilise Attaque basique et inflige %d dégâts à %s\n", c.Nom, 5, m.Nom)
+		fmt.Printf("%s PV : %d / %d\n\n", m.Nom, m.Hp, m.HpMax)
+	case "s":
+		// spéciale : 12 dégâts, coût 20 mana
+		if c.Mana < 20 {
+			fmt.Println("Pas assez de mana pour attaque spéciale.")
+			return false
+		}
+		c.Mana -= 20
+		m.Hp -= 12
+		if m.Hp < 0 {
+			m.Hp = 0
+		}
+		fmt.Printf("%s utilise Attaque spéciale et inflige %d dégâts à %s\n", c.Nom, 12, m.Nom)
+		fmt.Printf("%s PV : %d / %d\n\n", m.Nom, m.Hp, m.HpMax)
+	case "m":
+		// sort : 20 dégâts, coût 30 mana
+		if c.Mana < 30 {
+			fmt.Println("Pas assez de mana pour lancer le sort.")
+			return false
+		}
+		c.Mana -= 30
+		m.Hp -= 20
+		if m.Hp < 0 {
+			m.Hp = 0
+		}
+		fmt.Printf("%s lance un sort et inflige %d dégâts à %s\n", c.Nom, 20, m.Nom)
+		fmt.Printf("%s PV : %d / %d\n\n", m.Nom, m.Hp, m.HpMax)
+	case "i":
+		// Inventaire : utiliser un objet (on affiche index + nom)
+		if len(c.inv) == 0 {
+			fmt.Println("Inventaire vide.")
+			return false
+		}
+		fmt.Println("Inventaire :")
+		for i, it := range c.inv {
+			fmt.Printf("[%d] %s x%d\n", i, it.nom, it.quantity)
+		}
+		fmt.Print("Choisissez index à utiliser (ou -1 pour annuler) : ")
+		var idx int
+		_, err := fmt.Scanf("%d\n", &idx)
+		if err != nil || idx < 0 || idx >= len(c.inv) {
+			fmt.Println("Annulation ou index invalide.")
+			return false
+		}
+		// exemple d'utilisation : potions de vie et potions de poison
+		item := c.inv[idx]
+		switch item.nom {
+		case "Potion de vie":
+			item.quantity--
+			c.Hp += 20
+			if c.Hp > c.HpMax {
+				c.Hp = c.HpMax
+			}
+			fmt.Printf("Vous utilisez %s. PV : %d / %d\n", item.nom, c.Hp, c.HpMax)
+		case "Potion de poison":
+			// potion de poison inflige poison au monstre
+			item.quantity--
+			m.Hp -= 10
+			if m.Hp < 0 {
+				m.Hp = 0
+			}
+			fmt.Printf("Vous utilisez %s sur %s. %s PV : %d / %d\n", item.nom, m.Nom, m.Nom, m.Hp, m.HpMax)
+		case "Augmentation d'inventaire":
+			// si tu stockes l'objet en inventaire (optionnel), utilise la fonction existante
+			item.quantity--
+			c.upgradeInventorySlot()
+		default:
+			fmt.Printf("Vous utilisez %s (effet non implémenté).\n", item.nom)
+			item.quantity--
+		}
+		// retirer si quantity==0
+		if item.quantity <= 0 {
+			c.inv = append(c.inv[:idx], c.inv[idx+1:]...)
+		} else {
+			// mettre à jour la quantité restante dans l'inventaire
+			c.inv[idx].quantity = item.quantity
+		}
+	default:
+		fmt.Println("Option inconnue, tour passé.")
+	}
+	// return whether monster dead
+	return m.Hp <= 0
+}
+
+func (c *Character) trainingFight(baseHpMax int) {
+	monster := initGoblin()
+	turn := 1
+
+	fmt.Println("=== Début de l'entraînement contre", monster.Nom, "===\n")
+
+	for {
+		fmt.Printf("---- Tour %d ----\n", turn)
+
+		// Joueur joue
+		monsterDead := characterTurn(c, &monster)
+		if monsterDead {
+			fmt.Printf("✅ %s a vaincu %s !\n", c.Nom, monster.Nom)
+			// loot simple
+			goldGain := 10
+			c.Money += goldGain
+			fmt.Printf("Vous remportez %d gold.\n", goldGain)
+			// drop chance : potion 50%
+			if rand.Intn(100) < 50 {
+				p := Objects{nom: "Potion de vie", quantity: 1}
+				c.addInventory(p)
+				fmt.Println("Vous récupérez : Potion de vie")
+			}
+			break
+		}
+
+		// Monstre joue
+		goblinPattern(&monster, c, turn)
+		if c.Hp <= 0 {
+			fmt.Println("☠️ Vous êtes mort... Retour au menu principal.")
+			// reset player HP to some value? Here just restore to half of max for continuity
+			c.Hp = c.HpMax / 2
+			break
+		}
+
+		turn++
+	}
+	// fin du combat, retour au menu
+	fmt.Println("Retour au menu principal.")
 }
