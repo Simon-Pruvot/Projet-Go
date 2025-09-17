@@ -14,7 +14,7 @@ import (
 
 func main() {
 	//J'appelle la fonction de l'écran de départ
-	TextBienvenu()
+	chosendif := TextBienvenu()
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
@@ -24,6 +24,13 @@ func main() {
 	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
 	player := classe()
+
+	if chosendif == "/start" {
+	} else if chosendif == "/hard" {
+		player.HpMax = player.HpMax / 2
+		player.Hp = player.Hp / 2
+	} else if chosendif == "/easy" {
+	}
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -175,7 +182,9 @@ func (c *Character) takePot() {
 
 // Fonction pour ajouter un objet à l'inventaire
 func (c *Character) addInventory(obj Objects) {
-	c.inv = append(c.inv, obj)
+	if c.canAddItem() {
+		c.inv = append(c.inv, obj)
+	}
 }
 
 func (c *Character) removeInventory(obj Objects) {
@@ -192,16 +201,58 @@ func (c *Character) removeInventory(obj Objects) {
 	}
 }
 
+func (c *Character) canAddItem() bool {
+	if len(c.inv) >= 10 {
+		fmt.Println("⚠️ Inventaire plein ! Impossible d’ajouter plus d’objets.")
+		return false
+	}
+	return true
+}
+
 func (c *Character) Marchand() {
+	building := []string{
+		"=========================================",
+		"=========================================",
+		"     _______                             ",
+		"     ||     |   |      |   \\     /      ",
+		"     ||    _|   |      |    \\   /       ",
+		"     ||---|_    |      |     \\ /        ",
+		"     ||     |   |      |       |         ",
+		"     ||-----|   |______|       |         ",
+		"                                         ",
+		"                                         ",
+		"                                         ",
+		"        __________________________       ",
+		"       /                         \\      ",
+		"      /                           \\     ",
+		"     /_____________________________\\    ",
+		"    |   /-_      /-_     /-_      /      ",
+		"    |_-/   \\-_-/   \\-_-/   \\-_-/|     ",
+		"    |          _______             |     ",
+		"    |         /       \\            |    ",
+		"    |         | .   . |            |     ",
+		"    |         |  -_-  |            |     ",
+		"    |         \\-------/            |    ",
+		"    |              |               |     ",
+		"    |              |               |     ",
+		"  ------------------------------------   ",
+		"   | |============================| |    ",
+		"   | |             |              | |    ",
+		"   | |            / \\             | |   ",
+		"   | |           /   \\            | |   ",
+		"=========================================",
+		"=========================================",
+	}
+
 	//objects
 	hpPot := Objects{nom: "Potion de vie", quantity: 1}
 	poisonPot := Objects{nom: "Potion de poison", quantity: 1}
 	swordCom := Objects{nom: "Épée C", quantity: 1}
 	swordRare := Objects{nom: "Épée B", quantity: 1}
-	//swordLegend := Objects{nom: "Épée A", quantity: 1}
+
 	armorCom := Objects{nom: "Armor C", quantity: 1}
 	armorRare := Objects{nom: "Armor B", quantity: 1}
-	//armorLegend := Objects{nom: "Armor A", quantity: 1}
+
 	LivFeu := Objects{nom: "Livre de Sort : Boule de feu", quantity: 1}
 
 	//resurces
@@ -234,25 +285,21 @@ func (c *Character) Marchand() {
 		nom   string
 		price int
 	}{
-		{"a", "Rock", 1},
-		{"b", "Wood", 1},
-		{"c", "Scrap", 5},
-		{"d", "Fourrure de Loup", 4},
-		{"e", "Peau de Troll", 7},
-		{"f", "Cuir de Sanglier", 3},
-		{"G", "Plume de Corbeau", 1},
+		{"a/A", "Rock", 1},
+		{"b/B", "Wood", 1},
+		{"c/C", "Scrap", 5},
+		{"d/D", "Fourrure de Loup", 4},
+		{"e/E", "Peau de Troll", 7},
+		{"f/F", "Cuir de Sanglier", 3},
+		{"g/G", "Plume de Corbeau", 1},
 		{"1", "Potion de vie", 1},
 		{"2", "Potion de poison", 1},
 		{"3", "Épée C", 5},
 		{"5", "Armure C", 5},
-		{"6", "Épée B", 10},
-		{"7", "Armure B", 10},
+		{"7", "Armure B", 20},
 	}
 
-	if err := keyboard.Open(); err != nil {
-		log.Fatal(err)
-	}
-	defer keyboard.Close()
+MarchandLoop:
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -260,178 +307,211 @@ func (c *Character) Marchand() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("\n===================================")
-		fmt.Println("Bienvenue chez le marchand !")
-		fmt.Println("A) Acheter")
-		fmt.Println("V) Vendre")
-		fmt.Println("Q) Quitter le marchand")
-		fmt.Println("===================================")
-
 		switch char {
 		case 'b', 'B':
-			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7, 8")
-			fmt.Println("Q to leave the marchant")
+			// build content lines for achats (keep same information/format as before)
+			content := []string{
+				"",
+				"Objets disponibles à l'achat :",
+				"    ________________________________________________",
+				"   / \\                                               \\.",
+				"  |   |                   Marchand                   |.",
+				"   \\_ |                                              |.",
+			}
 
+			for _, it := range achats {
+				content = append(content, fmt.Sprintf("      |   %-4s %-28s %3d Gold |", it.key, it.nom, it.price))
+			}
+
+			content = append(content,
+				"      |                                              |.",
+				"      |   ___________________________________________|",
+				"      |  /                                           /.",
+				"      \\_/__________________________________________/.",
+				"",
+				"Chose an item: 1, 2, 3, 5, 6, 7, 8",
+				"Q to leave the marchant",
+			)
+
+			lines := CombineColumnsToLines([][]string{building, content}, 4) // returns []string
+			FullScreenDrawCentered(lines)
+
+		AchatLoop:
 			for {
 				char, _, err := keyboard.GetKey()
 				if err != nil {
-					log.Fatal(err)
-				}
 
-				if char == 'a' || char == 'A' {
-					fmt.Println("\nObjets disponibles à l'achat :")
-					fmt.Println("    ______________________________")
-					fmt.Println("   / \\                             \\.")
-					fmt.Println("  |   |         Marchand           |.")
-					fmt.Println("   \\_ |                            |.")
-					for _, it := range achats {
-						fmt.Printf("     |   %s) %-25s %2d Gold |\n", it.key, it.nom, it.price)
-					}
-					fmt.Println("     |                            |.")
-					fmt.Println("     |   _________________________|___")
-					fmt.Println("     |  /                            /.")
-					fmt.Println("     \\_/dc__________________________/.")
-
-					fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour l’acheter, ou Q pour revenir.")
 				}
 
 				switch char {
-				case '1', '&': // Acheter une potion de soin pour 2 Gold
-					if len(c.inv) < 1 {
-						c.addInventory(hpPot)
-					}
-					for i := 0; i < len(c.inv); i++ {
-						if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity > 0 {
-						} else {
-							c.addInventory(hpPot)
-						}
-					}
+				case '1', '&': // Acheter potion de vie
+
 					if c.Money >= 3 {
 						c.Money -= 3
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Potion de vie" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(hpPot)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(hpPot)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
 
-				case '2', 'é': // Acheter une potion de poison pour 3 Gold
+				case '2', 'é': // Acheter potion de poison
 					if c.Money >= 6 {
 						c.Money -= 6
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Potion de poison" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(poisonPot)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(poisonPot)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
 
-				case '3', '"': // Acheter Sword C pour 10 Gold
+				case '3', '"': // Acheter Sword C
 					if c.Money >= 10 {
 						c.Money -= 10
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Épée C" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(swordCom)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(swordCom)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
 
-				case '5', '(': // Acheter Armor C pour 10 Gold
+				case '5', '(': // Acheter Armor C
 					if c.Money >= 10 {
 						c.Money -= 10
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Armor C" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(armorCom)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(armorCom)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
 
-				case '6', '-': // Acheter Sword B pour 20 Gold
+				case '6', '-': // Acheter Sword B
 					if c.Money >= 20 {
 						c.Money -= 20
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Épée B" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(swordRare)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(swordRare)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
 
-				case '7', 'è': // Acheter Armor B pour 20 Gold
+				case '7', 'è': // Acheter Armor B
 					if c.Money >= 20 {
 						c.Money -= 20
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Armor B" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(armorRare)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(armorRare)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
-				case '8', '_': // Acheter Armor B pour 20 Gold
+
+				case '8', '_': // Acheter Livre de Sort
 					if c.Money >= 25 {
 						c.Money -= 25
-						for i := 0; i < len(c.inv); i++ {
+						added := false
+						for i := range c.inv {
 							if c.inv[i].nom == "Livre de Sort : Boule de feu" {
 								c.inv[i].quantity++
-							} else {
-								c.addInventory(LivFeu)
+								added = true
+								break
 							}
+						}
+						if !added {
+							c.addInventory(LivFeu)
 						}
 					} else {
 						fmt.Println("Need More Gold")
 					}
 
 				case 'q', 'Q':
-					return
+					fmt.Println("Au revoir !")
+					break AchatLoop
 				}
 			}
 
 		case 's', 'S':
-			fmt.Println("Chose an item: 1, 2, 3, 5, 6, 7")
-			fmt.Println("Q to leave the marchant")
+			// build content lines for ventes
+			contentV := []string{
+				"",
+				"Objets que vous pouvez vendre :",
+				"    _________________________________________",
+				"   / \\                                       \\.",
+				"  |   |               Revente                |.",
+				"   \\_ |                                      |.",
+			}
 
+			for _, it := range ventes {
+				contentV = append(contentV, fmt.Sprintf("      |  %-4s %-22s %2d Gold |", it.key, it.nom, it.price))
+			}
+
+			contentV = append(contentV,
+				"      |                                      |.",
+				"      |   ___________________________________|",
+				"      |  /                                   /.",
+				"      \\_/___________________________________/.",
+				"",
+				"Appuyez sur la touche correspondant à l’objet pour le vendre, ou Q pour revenir.",
+				"Chose an item: 1, 2, 3, 5, 6, 7",
+				"Q to leave the marchant",
+			)
+
+			// print building left and vente list right
+			lines := CombineColumnsToLines([][]string{building, contentV}, 4) // returns []string
+			FullScreenDrawCentered(lines)
+
+		VenteLoop:
 			for {
 				char, _, err := keyboard.GetKey()
 				if err != nil {
 					log.Fatal(err)
-				}
-
-				if char == 'v' || char == 'V' {
-					fmt.Println("\nObjets que vous pouvez vendre :")
-					fmt.Println("    ______________________________")
-					fmt.Println("   / \\                             \\.")
-					fmt.Println("  |   |         Revente            |.")
-					fmt.Println("   \\_ |                            |.")
-					for _, it := range ventes {
-						fmt.Printf("     |   %s) %-25s %2d Gold |\n", it.key, it.nom, it.price)
-					}
-					fmt.Println("     |                            |.")
-					fmt.Println("     |   _________________________|___")
-					fmt.Println("     |  /                            /.")
-					fmt.Println("     \\_/dc__________________________/.")
-
-					fmt.Println("\nAppuyez sur la touche correspondant à l’objet pour le vendre, ou Q pour revenir.")
 				}
 
 				switch char {
@@ -587,9 +667,11 @@ func (c *Character) Marchand() {
 
 				case 'q', 'Q':
 					fmt.Println("Au revoir !")
-					return
+					break VenteLoop
 				}
 			}
+		case 'q', 'Q':
+			break MarchandLoop
 
 		}
 	}

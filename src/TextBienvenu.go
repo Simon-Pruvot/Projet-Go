@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TextBienvenu() {
+func TextBienvenu() string {
 	fmt.Println(`
 ==========================================================================================================================================
 ==========================================================================================================================================
@@ -42,8 +42,10 @@ func TextBienvenu() {
 	var choosestart string
 	fmt.Scanln(&choosestart)
 	if choosestart == "/start" {
-		classe()
+		return "/start"
 	} else if choosestart == "/difficulty" {
-		Menu()
+		return Menu()
+	} else {
+		return TextBienvenu()
 	}
 }
