@@ -135,10 +135,11 @@ func Perso(classe string) Character {
 
 	switch classe {
 	case "/Elfe":
-		return Character{Nom, "Elfe", 1, 80, 40, []Objects{}, 100, []string{}}
+		return initCharacter(Nom, "Elfe", 1, 80, 40, []Objects{}, []string{}, Equipment{})
 	case "/Humain":
-		return Character{Nom, "Humain", 1, 100, 50, []Objects{}, 100, []string{}}
+		return initCharacter(Nom, "Humain", 1, 100, 50, []Objects{}, []string{}, Equipment{})
 	default:
-		return Character{Nom, "Nain", 1, 120, 60, []Objects{}, 100, []string{}}
+		return initCharacter(Nom, "Nain", 1, 120, 60, []Objects{}, []string{}, Equipment{})
 	}
+
 }
