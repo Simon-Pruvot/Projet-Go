@@ -952,5 +952,6 @@ func (c *Character) craftItem(item Objects, req map[string]int) {
 
 	// Ajout de l’objet
 	c.addInventory(item)
+	CreaftingAnim()
 	fmt.Printf("✅ Vous avez fabriqué : %s\n", item.nom)
 }

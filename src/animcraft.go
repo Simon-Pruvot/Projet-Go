@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Menu2() {
+func CreaftingAnim() {
 	Clear()
 	fmt.Println(`
 
