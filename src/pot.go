@@ -32,3 +32,24 @@ func (c *Character) UsePoison(target *Monster) {
 	}
 	fmt.Println("⚠️ Vous n’avez plus de potion de poison !")
 }
+
+func (c *Character) takePot() {
+	for i := 0; i < len(c.inv); i++ {
+		if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity > 0 {
+			c.inv[i].quantity--
+			c.Hp += 50
+			if c.Hp > c.HpMax {
+				c.Hp = c.HpMax
+			}
+			fmt.Println("🍷 You drank a potion! HP:", c.Hp, "/", c.HpMax)
+			fmt.Println(``)
+
+			// if no more left → remove it
+			if c.inv[i].quantity == 0 {
+				c.inv = append(c.inv[:i], c.inv[i+1:]...)
+			}
+			return
+		}
+	}
+	fmt.Println("⚠️ No potion left!")
+}

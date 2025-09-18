@@ -89,11 +89,10 @@ func Menu() string {
 
 	var diff string
 	fmt.Scanln(&diff)
-	if diff == "/easy" {
+	switch diff {
+	case "/easy", "/hard":
 		return diff
-	} else if diff == "/hard" {
-		return diff
-	} else {
+	default:
 		return Menu()
 	}
 }
