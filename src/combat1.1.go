@@ -5,6 +5,7 @@ import (
 )
 
 func combat(c *Character, m *Monster) {
+	Clear()
 	man := []string{
 		"",
 		"",

@@ -122,6 +122,7 @@ func CreateClasse() Character {
 }
 
 func Perso(classe string) Character {
+	Clear()
 	fmt.Println(`
 		"",
 		" _____                                    _              _____           _ ",
