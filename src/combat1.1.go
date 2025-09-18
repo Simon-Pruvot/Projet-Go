@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	player := &Characters{
+	player := &Character{
 		Nom:     "Héros",
 		Hp:      70,
 		HpMax:   100,
@@ -13,16 +13,16 @@ func main() {
 		ManaMax: 50,
 	}
 
-	// Création d’un monstre
-	monster := &Monsters{
+	monster := &Monster{
 		Nom:   "Squidward",
 		Hp:    120,
 		HpMax: 120,
 	}
+
 	combat(player, monster)
 }
 
-func combat(c *Characters, m *Monsters) {
+func combat(c *Character, m *Monster) {
 	man := []string{
 		"",
 		"",
