@@ -15,6 +15,7 @@ func main() {
 
 	//J'appelle la fonction de l'écran de départ
 	chosendif := TextBienvenu()
+	lorefirst()
 
 	if err := keyboard.Open(); err != nil {
 		log.Fatal(err)
@@ -31,7 +32,6 @@ func main() {
 	history := false
 	if reponse == "oui" || reponse == "OUI" {
 		history = true
-		lorefirst()
 		if player.Classe == "elfe" {
 			loreelfe()
 		} else if player.Classe == "humain" {
@@ -88,9 +88,6 @@ func main() {
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
 			ShowMap()
 		case 't', 'T':
-			if history {
-				loreelfe2()
-			}
 			monst := initGoblin("Gobelin")
 			trainingFight(&player, monst)
 		case 'e', 'E':
@@ -98,17 +95,20 @@ func main() {
 			ShowMap()
 		case 'n', 'N':
 			if history {
-				loreboss3()
-			}
-			monst := initGoblin("dead")
-			Fight1(&player, monst)
-		case 'm', 'M':
-			if history {
 				loresquelette()
 			}
 			monst := initGoblin("skeleton")
+			Fight1(&player, monst)
+		case 'm', 'M':
+			if history {
+				loreelfe2()
+			}
+			monst := initGoblin("dead")
 			Fight2(&player, monst)
 		case 'l', 'L':
+			if history {
+				loreboss3()
+			}
 			monst := initGoblin("dragon")
 			Fight3(&player, monst)
 		case 's', 'S':
