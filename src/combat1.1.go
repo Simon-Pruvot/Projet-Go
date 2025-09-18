@@ -5,10 +5,24 @@ import (
 )
 
 func main() {
-	combat()
+	player := &Characters{
+		Nom:     "Héros",
+		Hp:      70,
+		HpMax:   100,
+		Mana:    30,
+		ManaMax: 50,
+	}
+
+	// Création d’un monstre
+	monster := &Monsters{
+		Nom:   "Squidward",
+		Hp:    120,
+		HpMax: 120,
+	}
+	combat(player, monster)
 }
 
-func combat(c *character, m *Monstres) {
+func combat(c *Characters, m *Monsters) {
 	man := []string{
 		"",
 		"",
@@ -82,6 +96,10 @@ func combat(c *character, m *Monstres) {
 		// Pad left column to fixed width
 		fmt.Printf("%-70s %s\n", left, right)
 	}
+	fmt.Printf("%-70s %s\n",
+		fmt.Sprintf("PV: %d / %d | Mana: %d / %d", c.Hp, c.HpMax, c.Mana, c.ManaMax),
+		fmt.Sprintf("PV: %d / %d | Mana: %d / %d", m.Hp, m.HpMax),
+	)
 	fmt.Println(`
 _______________________________________________________________________________________________________________________________                                                                                      
 	`)
