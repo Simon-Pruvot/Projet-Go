@@ -4,24 +4,6 @@ import (
 	"fmt"
 )
 
-func main() {
-	player := &Character{
-		Nom:     "Héros",
-		Hp:      70,
-		HpMax:   100,
-		Mana:    30,
-		ManaMax: 50,
-	}
-
-	monster := &Monster{
-		Nom:   "Squidward",
-		Hp:    120,
-		HpMax: 120,
-	}
-
-	combat(player, monster)
-}
-
 func combat(c *Character, m *Monster) {
 	man := []string{
 		"",

@@ -1193,6 +1193,8 @@ func characterTurn(c *Character, m *Monster) bool {
 		return false
 	}
 
+	combat(c, m)
+
 	switch strings.ToLower(input) {
 	case "a":
 		// Attaque basique : 5 dégâts, coût 10 mana
