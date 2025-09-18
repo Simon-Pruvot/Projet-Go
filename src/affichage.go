@@ -147,7 +147,6 @@ func (c Character) DisplayEquipment() {
 }
 
 func (c Character) displaySkills() {
-	fmt.Println("📖 Liste de vos sorts :")
 	for _, s := range c.Skills {
 		fmt.Println(" -", s)
 	}
