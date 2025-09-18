@@ -68,7 +68,7 @@ func (c *Character) Equip(item Objects, slot string, baseHpMax int) {
 		}
 	}
 
-	// Handle replacement
+	// Handle replacement and assign new equipment
 	var replaced *Objects
 	switch slot {
 	case "chapeau":
@@ -80,16 +80,17 @@ func (c *Character) Equip(item Objects, slot string, baseHpMax int) {
 	case "bottes":
 		replaced = c.Equipment.Bottes
 		c.Equipment.Bottes = &item
-	case "Épée C":
-		c.bonusDMG += 5
-	case "Épée B":
-		c.bonusDMG += 10
-	case "Épée A":
-		c.bonusDMG += 15
+	case "weapon":
+		replaced = c.Equipment.Weapon
+		c.Equipment.Weapon = &item
+
 	default:
 		fmt.Println("⚠️ Slot inconnu :", slot)
 		return
 	}
+
+	// Recalculate HP
+	c.updateHpMax(baseHpMax)
 
 	// Return old equipment to inventory if replaced
 	if replaced != nil {
@@ -104,14 +105,38 @@ func (c *Character) Equip(item Objects, slot string, baseHpMax int) {
 func (c *Character) updateHpMax(baseHpMax int) {
 	c.HpMax = baseHpMax
 
-	if c.Equipment.Chapeau != nil && c.Equipment.Chapeau.nom == "Chapeau de l’aventurier" {
-		c.HpMax += 10
-	}
-	if c.Equipment.Tunique != nil && c.Equipment.Tunique.nom == "Tunique de l’aventurier" {
-		c.HpMax += 25
-	}
-	if c.Equipment.Bottes != nil && c.Equipment.Bottes.nom == "Bottes de l’aventurier" {
+	if c.Equipment.Chapeau != nil && c.Equipment.Chapeau.nom == "Chapeau A" {
 		c.HpMax += 15
+	} else if c.Equipment.Chapeau != nil && c.Equipment.Chapeau.nom == "Chapeau B" {
+		c.HpMax += 10
+	} else if c.Equipment.Chapeau != nil && c.Equipment.Chapeau.nom == "Chapeau C" {
+		c.HpMax += 5
+	}
+
+	if c.Equipment.Tunique != nil && c.Equipment.Tunique.nom == "Tunique A" {
+		c.HpMax += 35
+	} else if c.Equipment.Tunique != nil && c.Equipment.Tunique.nom == "Tunique B" {
+		c.HpMax += 25
+	} else if c.Equipment.Tunique != nil && c.Equipment.Tunique.nom == "Tunique C" {
+		c.HpMax += 15
+	}
+
+	if c.Equipment.Bottes != nil && c.Equipment.Bottes.nom == "Bottes A" {
+		c.HpMax += 25
+	} else if c.Equipment.Bottes != nil && c.Equipment.Bottes.nom == "Bottes B" {
+		c.HpMax += 15
+	} else if c.Equipment.Bottes != nil && c.Equipment.Bottes.nom == "Bottes C" {
+		c.HpMax += 5
+	}
+	if c.Equipment.Weapon != nil {
+		switch c.Equipment.Weapon.nom {
+		case "Épée A":
+			c.bonusDMG = 15
+		case "Épée B":
+			c.bonusDMG = 10
+		case "Épée C":
+			c.bonusDMG = 5
+		}
 	}
 
 	// Adjust current HP if it exceeds new max

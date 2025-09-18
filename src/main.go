@@ -8,11 +8,6 @@ import (
 )
 
 func main() {
-	// Objets globaux utilisables dans Marchand + Forgeron
-	swordLegend := Objects{nom: "Épée A", quantity: 1}
-	armorLegend := Objects{nom: "Armor A", quantity: 1}
-	potionLegend := Objects{nom: "Potion Rage", quantity: 1}
-
 	//J'appelle la fonction de l'écran de départ
 	chosendif := TextBienvenu()
 	lorefirst()

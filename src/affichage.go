@@ -81,13 +81,20 @@ BoucleInventaire:
 			index := demanderIndex(len(c.inv))
 			if index >= 0 {
 				item := c.inv[index]
-				if strings.HasPrefix(item.nom, "Armor ") {
+
+				switch {
+				case strings.HasPrefix(item.nom, "Armor "):
 					c.UseArmorSet(item.nom)
 					// Remove the used set
 					c.inv = append(c.inv[:index], c.inv[index+1:]...)
-				} else if strings.HasPrefix(item.nom, "Livre ") {
-					c.useItem(c.inv[index].nom)
-				} else {
+
+				case strings.HasPrefix(item.nom, "Livre "):
+					c.useItem(item.nom)
+
+				case item.nom == "Potion de vie":
+					c.takePot()
+
+				default:
 					fmt.Println("⚠️ Cet objet ne peut pas être utilisé :", item.nom)
 				}
 			}
@@ -102,7 +109,7 @@ BoucleInventaire:
 					c.Equip(c.inv[index], "chapeau", baseHpMax)
 					fmt.Println("✅ Équipé :", itemName)
 
-				case len(itemName) >= 6 && itemName[:6] == "Tunique":
+				case len(itemName) >= 7 && itemName[:7] == "Tunique":
 					c.Equip(c.inv[index], "tunique", baseHpMax)
 					fmt.Println("✅ Équipé :", itemName)
 
@@ -110,8 +117,12 @@ BoucleInventaire:
 					c.Equip(c.inv[index], "bottes", baseHpMax)
 					fmt.Println("✅ Équipé :", itemName)
 
+				case strings.HasPrefix(itemName, "Épée"):
+					c.Equip(c.inv[index], "weapon", baseHpMax)
+					fmt.Println("✅ Équipé :", itemName)
+
 				default:
-					fmt.Println("⚠️ Choix invalide, vous ne pouvez équiper que Chapeau, Tunique ou Bottes.")
+					fmt.Println("⚠️ Choix invalide, vous ne pouvez équiper que Chapeau, Tunique, Bottes ou Épée.")
 				}
 			} else {
 				fmt.Println("⚠️ Index invalide.")
@@ -142,6 +153,11 @@ func (c Character) DisplayEquipment() {
 	}
 	if c.Equipment.Bottes != nil {
 		fmt.Println("  Bottes :", c.Equipment.Bottes.nom)
+	} else {
+		fmt.Println("  Bottes : Aucune")
+	}
+	if c.Equipment.Weapon != nil {
+		fmt.Println("  Weapon :", c.Equipment.Weapon.nom)
 	} else {
 		fmt.Println("  Bottes : Aucune")
 	}

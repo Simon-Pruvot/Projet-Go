@@ -4,6 +4,7 @@ type Equipment struct {
 	Chapeau *Objects
 	Tunique *Objects
 	Bottes  *Objects
+	Weapon  *Objects
 }
 
 type Objects struct {
@@ -55,3 +56,8 @@ var objects = map[string]Objects{
 	"Tunique C": {nom: "Tunique C", quantity: 1},
 	"Bottes C":  {nom: "Bottes C", quantity: 1},
 }
+
+// Objets globaux utilisables dans Marchand + Forgeron
+var swordLegend = Objects{nom: "Épée A", quantity: 1}
+var armorLegend = Objects{nom: "Armor A", quantity: 1}
+var potionLegend = Objects{nom: "Potion Rage", quantity: 1}

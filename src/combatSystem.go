@@ -95,7 +95,7 @@ func characterTurn(c *Character, m *Monster) bool {
 			return false
 		}
 		c.Mana -= 10
-		m.Hp -= 5
+		m.Hp -= (5 + c.bonusDMG)
 		if m.Hp < 0 {
 			m.Hp = 0
 		}
@@ -103,7 +103,7 @@ func characterTurn(c *Character, m *Monster) bool {
 		if c.Initiative > 10 {
 			c.Initiative = 10
 		}
-		fmt.Printf("%s utilise Attaque basique et inflige %d dégâts à %s\n", c.Nom, 5, m.Nom)
+		fmt.Printf("%s utilise Attaque basique et inflige %d dégâts à %s\n", c.Nom, (5 + c.bonusDMG), m.Nom)
 
 	case "s":
 		// Spéciale : 12 dégâts, coût 20 mana
@@ -112,7 +112,7 @@ func characterTurn(c *Character, m *Monster) bool {
 			return false
 		}
 		c.Mana -= 20
-		m.Hp -= 12
+		m.Hp -= (12 + c.bonusDMG)
 		if m.Hp < 0 {
 			m.Hp = 0
 		}
@@ -120,7 +120,7 @@ func characterTurn(c *Character, m *Monster) bool {
 		if c.Initiative < 0 {
 			c.Initiative = 0
 		}
-		fmt.Printf("%s utilise Attaque spéciale et inflige %d dégâts à %s\n", c.Nom, 12, m.Nom)
+		fmt.Printf("%s utilise Attaque spéciale et inflige %d dégâts à %s\n", c.Nom, (12 + c.bonusDMG), m.Nom)
 
 	case "m":
 		// Magie : uniquement si on a appris au moins un sort
@@ -149,7 +149,7 @@ func characterTurn(c *Character, m *Monster) bool {
 				}
 				spell := c.Skills[0]
 				c.Mana -= 30
-				m.Hp -= 18
+				m.Hp -= (18 + c.bonusDMG)
 				if m.Hp < 0 {
 					m.Hp = 0
 				}
@@ -164,7 +164,7 @@ func characterTurn(c *Character, m *Monster) bool {
 				}
 				spell := c.Skills[1]
 				c.Mana -= 15
-				m.Hp -= 8
+				m.Hp -= (8 + c.bonusDMG)
 				if m.Hp < 0 {
 					m.Hp = 0
 				}
