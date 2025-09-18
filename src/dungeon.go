@@ -10,10 +10,9 @@ func trainingFight(player *Character, goblin Monster) {
 	turn := 1
 	fmt.Printf("=== Début de l'entraînement contre %s ===\n", goblin.Nom)
 
-	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
 	combat0(player, &goblin)
-	// Définition du loot possible
+
 	lootPool := []Objects{
 		{"Fourrure de Loup", 1},
 		{"Peau de Troll", 1},
@@ -23,8 +22,13 @@ func trainingFight(player *Character, goblin Monster) {
 
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
-		characterTurn(player, &goblin) // joueur joue
+		player.Mana += 10
+		if player.Mana > player.ManaMax {
+			player.Mana = player.ManaMax
+		}
 		combat0(player, &goblin)
+		characterTurn(player, &goblin)
+		goblinPattern(&goblin, player, turn)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
@@ -39,27 +43,18 @@ func trainingFight(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			for {
-				fmt.Println("Entrée une letter pour continuer...")
-				var input string
-				fmt.Scanln(&input) // Waits until player presses Enter
-				break
-			}
+			fmt.Println("Entrée une lettre pour continuer...")
+			var input string
+			fmt.Scanln(&input)
 		}
-
-		goblinPattern(&goblin, player, turn) // gobelin joue
 		turn++
 	}
-
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		for {
-			fmt.Println("Entrée une letter pour continuer...")
-			var input string
-			fmt.Scanln(&input) // Waits until player presses Enter
-			break
-		}
+		fmt.Println("Entrée une lettre pour continuer...")
+		var input string
+		fmt.Scanln(&input)
 		return
 	}
 }
@@ -71,7 +66,7 @@ func Fight1(player *Character, goblin Monster) {
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
 	combat(player, &goblin)
-	// Définition du loot possible
+
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
 		{"Peau de Troll", 3},
@@ -81,8 +76,13 @@ func Fight1(player *Character, goblin Monster) {
 
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
-		characterTurn(player, &goblin) // joueur joue
+		player.Mana += 10
+		if player.Mana > player.ManaMax {
+			player.Mana = player.ManaMax
+		}
 		combat(player, &goblin)
+		characterTurn(player, &goblin)
+		goblinPattern(&goblin, player, turn)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
@@ -97,27 +97,20 @@ func Fight1(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			for {
-				fmt.Println("Entrée une letter pour continuer...")
-				var input string
-				fmt.Scanln(&input) // Waits until player presses Enter
-				break
-			}
+			fmt.Println("Entrée une lettre pour continuer...")
+			var input string
+			fmt.Scanln(&input)
 		}
 
-		goblinPattern(&goblin, player, turn) // gobelin joue
 		turn++
 	}
 
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		for {
-			fmt.Println("Entrée une letter pour continuer...")
-			var input string
-			fmt.Scanln(&input) // Waits until player presses Enter
-			break
-		}
+		fmt.Println("Entrée une lettre pour continuer...")
+		var input string
+		fmt.Scanln(&input)
 		return
 	}
 }
@@ -129,7 +122,7 @@ func Fight2(player *Character, goblin Monster) {
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
 	combat2(player, &goblin)
-	// Définition du loot possible
+
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
 		{"Peau de Troll", 3},
@@ -139,8 +132,13 @@ func Fight2(player *Character, goblin Monster) {
 
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
-		characterTurn(player, &goblin) // joueur joue
+		player.Mana += 10
+		if player.Mana > player.ManaMax {
+			player.Mana = player.ManaMax
+		}
 		combat2(player, &goblin)
+		characterTurn(player, &goblin)
+		goblinPattern(&goblin, player, turn)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
@@ -155,27 +153,20 @@ func Fight2(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			for {
-				fmt.Println("Entrée une letter pour continuer...")
-				var input string
-				fmt.Scanln(&input) // Waits until player presses Enter
-				break
-			}
+			fmt.Println("Entrée une lettre pour continuer...")
+			var input string
+			fmt.Scanln(&input)
 		}
 
-		goblinPattern(&goblin, player, turn) // gobelin joue
 		turn++
 	}
 
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		for {
-			fmt.Println("Entrée une letter pour continuer...")
-			var input string
-			fmt.Scanln(&input) // Waits until player presses Enter
-			break
-		}
+		fmt.Println("Entrée une lettre pour continuer...")
+		var input string
+		fmt.Scanln(&input)
 		return
 	}
 }
@@ -187,6 +178,7 @@ func Fight3(player *Character, goblin Monster) {
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
 	combat3(player, &goblin)
+
 	// Définition du loot possible
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
@@ -197,8 +189,13 @@ func Fight3(player *Character, goblin Monster) {
 
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
-		characterTurn(player, &goblin) // joueur joue
+		player.Mana += 10
+		if player.Mana > player.ManaMax {
+			player.Mana = player.ManaMax
+		}
 		combat3(player, &goblin)
+		characterTurn(player, &goblin)
+		goblinPattern(&goblin, player, turn)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
@@ -214,27 +211,20 @@ func Fight3(player *Character, goblin Monster) {
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
 			lorefin()
-			for {
-				fmt.Println("Entrée une letter pour continuer...")
-				var input string
-				fmt.Scanln(&input) // Waits until player presses Enter
-				break
-			}
+
+			fmt.Println("Appuyez sur Entrée pour continuer...")
+			fmt.Scanln()
 		}
 
-		goblinPattern(&goblin, player, turn) // gobelin joue
+		if player.Hp <= 0 {
+			mort()
+			player.isDead()
+			combat3(player, &goblin)
+			fmt.Println("Appuyez sur Entrée pour continuer...")
+			fmt.Scanln()
+			return
+		}
+
 		turn++
-	}
-
-	if player.Hp <= 0 {
-		mort()
-		player.isDead()
-		for {
-			fmt.Println("Entrée une letter pour continuer...")
-			var input string
-			fmt.Scanln(&input) // Waits until player presses Enter
-			break
-		}
-		return
 	}
 }

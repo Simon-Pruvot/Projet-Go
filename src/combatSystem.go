@@ -69,12 +69,6 @@ func goblinPattern(g *Monster, c *Character, turn int) {
 }
 
 func characterTurn(c *Character, m *Monster) bool {
-	// Recharge 10 mana par tour (max ManaMax)
-	c.Mana += 10
-	if c.Mana > c.ManaMax {
-		c.Mana = c.ManaMax
-	}
-
 	fmt.Println("=== Votre tour ===")
 	fmt.Printf("PV: %d / %d | Mana: %d / %d\n", c.Hp, c.HpMax, c.Mana, c.ManaMax)
 	fmt.Println("Options : (A)ttaquer | (S)péciale | (M)agie | (I)nventaire | (K) Skip")
@@ -153,7 +147,7 @@ func characterTurn(c *Character, m *Monster) bool {
 				if m.Hp < 0 {
 					m.Hp = 0
 				}
-				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
+				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, (18 + c.bonusDMG), m.Nom)
 				valid = true
 				c.Initiative -= 2 // perte d'initiative pour sort
 
@@ -168,7 +162,7 @@ func characterTurn(c *Character, m *Monster) bool {
 				if m.Hp < 0 {
 					m.Hp = 0
 				}
-				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
+				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, (8 + c.bonusDMG), m.Nom)
 				valid = true
 				c.Initiative -= 2 // perte d'initiative pour sort
 
