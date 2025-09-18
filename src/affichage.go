@@ -28,6 +28,7 @@ func (c Character) displayInfo() {
 		fmt.Sprintf("║ Lvl    : %-18d  ║", c.Lvl),
 		fmt.Sprintf("║ Hp Max : %-18d  ║", c.HpMax),
 		fmt.Sprintf("║ Hp     : %-18d  ║", c.Hp),
+		fmt.Sprintf("║ Money  : %-18d  ║", c.Money),
 		"║                              ║",
 		"╚══════════════════════════════╝",
 	}
