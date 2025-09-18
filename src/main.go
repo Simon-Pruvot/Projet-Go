@@ -87,6 +87,8 @@ func main() {
 		case 't', 'T':
 			goblin := initGoblin()
 			trainingFight(&player, goblin)
+		case 'e', 'E':
+			player.DisplayEquipment()
 		}
 	}
 }
@@ -180,6 +182,8 @@ BoucleInventaire:
 					c.UseArmorSet(item.nom)
 					// Remove the used set
 					c.inv = append(c.inv[:index], c.inv[index+1:]...)
+				} else if strings.HasPrefix(item.nom, "Livre de Sort ") {
+					c.useItem(c.inv[index].nom)
 				} else {
 					fmt.Println("⚠️ Cet objet ne peut pas être utilisé :", item.nom)
 				}
@@ -187,10 +191,27 @@ BoucleInventaire:
 
 		case 'e', 'E':
 			index := demanderIndex(len(c.inv))
-			if index >= 0 {
-				// TODO: demander le slot exact (chapeau/tunique/bottes)
-				c.Equip(c.inv[index], "chapeau", baseHpMax)
-				fmt.Println("✅ Équipé :", c.inv[index].nom)
+			if index >= 0 && index < len(c.inv) {
+				itemName := c.inv[index].nom
+
+				switch {
+				case len(itemName) >= 7 && itemName[:7] == "Chapeau":
+					c.Equip(c.inv[index], "chapeau", baseHpMax)
+					fmt.Println("✅ Équipé :", itemName)
+
+				case len(itemName) >= 6 && itemName[:6] == "Tunique":
+					c.Equip(c.inv[index], "tunique", baseHpMax)
+					fmt.Println("✅ Équipé :", itemName)
+
+				case len(itemName) >= 6 && itemName[:6] == "Bottes":
+					c.Equip(c.inv[index], "bottes", baseHpMax)
+					fmt.Println("✅ Équipé :", itemName)
+
+				default:
+					fmt.Println("⚠️ Choix invalide, vous ne pouvez équiper que Chapeau, Tunique ou Bottes.")
+				}
+			} else {
+				fmt.Println("⚠️ Index invalide.")
 			}
 
 		case 'r', 'R':
@@ -275,7 +296,7 @@ func (c *Character) upgradeInventorySlot() {
 	fmt.Printf("Capacité d'inventaire augmentée : %d (restant %d)\n", c.MaxInventorySlots, 3-c.InventoryUpgrades)
 }
 func initCharacter(nom, classe string, lvl, hpmax, hp int, inv []Objects, skills []string, equipment Equipment) Character {
-	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: 100, Skills: skills, Equipment: equipment, MaxInventorySlots: 10, InventoryUpgrades: 0, Mana: 30, ManaMax: 30, bonusDMG: 0}
+	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: 100, Skills: skills, Equipment: equipment, MaxInventorySlots: 10, InventoryUpgrades: 0, Mana: 30, ManaMax: 30, bonusDMG: 0, Initiative: 5}
 }
 
 // Equip allows to equip an object in the right slot
@@ -516,12 +537,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Potion de vie" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(hpPot)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -534,12 +557,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Potion de poison" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(poisonPot)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -552,12 +577,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Épée C" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(swordCom)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -570,12 +597,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Armor C" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(armorCom)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -588,12 +617,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Épée B" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(swordRare)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -606,12 +637,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Armor B" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(armorRare)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -624,12 +657,14 @@ MarchandLoop:
 						for i := range c.inv {
 							if c.inv[i].nom == "Livre de Sort : Boule de feu" {
 								c.inv[i].quantity++
+								fmt.Println("✅")
 								added = true
 								break
 							}
 						}
 						if !added {
 							c.addInventory(LivFeu)
+							fmt.Println("✅")
 						}
 					} else {
 						fmt.Println("Need More Gold")
@@ -638,6 +673,7 @@ MarchandLoop:
 					if c.Money >= 30 {
 						c.Money -= 30
 						c.upgradeInventorySlot()
+						fmt.Println("✅")
 					} else {
 						fmt.Println("💰 Pas assez d’or pour l’augmentation !")
 					}
@@ -689,20 +725,24 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == "Potion de vie" && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 				case '2', 'é': // Acheter une potion de poison pour 3 Gold
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -710,10 +750,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Épée C" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == "Épée C" && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -721,10 +763,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Armor C" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == "Armor C" && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -732,10 +776,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Épée B" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == "Épée B" && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -743,10 +789,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == "Armor B" && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == "Armor B" && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -756,10 +804,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == rock.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == rock.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -768,10 +818,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == wood.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == wood.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -780,10 +832,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == scrap.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money += 5
 						}
 						if c.inv[i].nom == scrap.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -792,10 +846,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == FOL.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money += 4
 						}
 						if c.inv[i].nom == FOL.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -804,10 +860,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == PDT.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money += 7
 						}
 						if c.inv[i].nom == PDT.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -816,10 +874,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == CDS.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money += 3
 						}
 						if c.inv[i].nom == CDS.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -828,10 +888,12 @@ MarchandLoop:
 					for i := 0; i < len(c.inv); i++ {
 						if c.inv[i].nom == PDC.nom && c.inv[i].quantity > 0 {
 							c.inv[i].quantity--
+							fmt.Println("✅")
 							c.Money++
 						}
 						if c.inv[i].nom == PDC.nom && c.inv[i].quantity == 0 {
 							c.removeInventory(c.inv[i])
+							fmt.Println("✅")
 						}
 					}
 
@@ -1152,11 +1214,13 @@ func (c *Character) craftItem(item Objects, req map[string]int) {
 }
 
 func initGoblin() Monster {
+	rand.Seed(time.Now().UnixNano()) // seed once at the start
 	return Monster{
-		Nom:   "Gobelin d'entraînement",
-		HpMax: 40,
-		Hp:    40, // égal à HpMax
-		Atk:   5,
+		Nom:        "Gobelin d'entraînement",
+		HpMax:      40,
+		Hp:         40,
+		Atk:        5,
+		Initiative: rand.Intn(10) + 1, // 1 to 10
 	}
 }
 
@@ -1181,6 +1245,8 @@ func characterTurn(c *Character, m *Monster) bool {
 		c.Mana = c.ManaMax
 	}
 
+	combat(c, m)
+
 	fmt.Println("=== Votre tour ===")
 	fmt.Printf("PV: %d / %d | Mana: %d / %d\n", c.Hp, c.HpMax, c.Mana, c.ManaMax)
 	fmt.Println("Options : (A)ttaquer | (S)péciale | (M)agie | (I)nventaire | (K) Skip")
@@ -1196,7 +1262,7 @@ func characterTurn(c *Character, m *Monster) bool {
 	combat(c, m)
 
 	switch strings.ToLower(input) {
-	case "a":
+	case "a", "A":
 		// Attaque basique : 5 dégâts, coût 10 mana
 		if c.Mana < 10 {
 			fmt.Println("Pas assez de mana pour attaque basique.")
@@ -1209,7 +1275,7 @@ func characterTurn(c *Character, m *Monster) bool {
 		}
 		fmt.Printf("%s utilise Attaque basique et inflige %d dégâts à %s\n", c.Nom, 5, m.Nom)
 
-	case "s":
+	case "s", "S":
 		// Spéciale : 12 dégâts, coût 20 mana
 		if c.Mana < 20 {
 			fmt.Println("Pas assez de mana pour attaque spéciale.")
@@ -1222,7 +1288,7 @@ func characterTurn(c *Character, m *Monster) bool {
 		}
 		fmt.Printf("%s utilise Attaque spéciale et inflige %d dégâts à %s\n", c.Nom, 12, m.Nom)
 
-	case "m":
+	case "m", "M":
 		// Magie : uniquement si on a appris au moins un sort
 		if len(c.Skills) == 0 {
 			fmt.Println("Vous n'avez appris aucun sort.")
@@ -1233,15 +1299,57 @@ func characterTurn(c *Character, m *Monster) bool {
 			return false
 		}
 		// Pour l'instant : utiliser le premier sort appris
-		spell := c.Skills[0]
-		c.Mana -= 30
-		m.Hp -= 20
-		if m.Hp < 0 {
-			m.Hp = 0
-		}
-		fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
+		for {
+			var inputspell string
+			_, err := fmt.Scanln(&inputspell)
+			if err != nil {
+				fmt.Println("Entrée invalide. Réessayez.")
+				continue // ask again
+			}
 
-	case "i":
+			switch inputspell {
+			case "&", "1":
+				if len(c.Skills) < 1 {
+					fmt.Println("Vous n'avez pas ce sort. Choisissez un sort valide.")
+					continue
+				}
+				if c.Mana < 30 {
+					fmt.Println("Pas assez de mana !")
+					continue
+				}
+				spell := c.Skills[0]
+				c.Mana -= 30
+				m.Hp -= 20
+				if m.Hp < 0 {
+					m.Hp = 0
+				}
+				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
+				return true // valid choice, stop the loop
+
+			case "é", "2":
+				if len(c.Skills) < 2 {
+					fmt.Println("Vous n'avez pas ce sort. Choisissez un sort valide.")
+					continue
+				}
+				if c.Mana < 30 {
+					fmt.Println("Pas assez de mana !")
+					continue
+				}
+				spell := c.Skills[1]
+				c.Mana -= 30
+				m.Hp -= 20
+				if m.Hp < 0 {
+					m.Hp = 0
+				}
+				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
+				return true // valid choice, stop the loop
+
+			default:
+				fmt.Println("Option invalide, réessayez.")
+			}
+		}
+
+	case "i", "I":
 		// Inventaire
 		if len(c.inv) == 0 {
 			fmt.Println("Inventaire vide.")
@@ -1272,9 +1380,9 @@ func characterTurn(c *Character, m *Monster) bool {
 			fmt.Printf("Vous utilisez %s. PV : %d / %d\n", item.nom, c.Hp, c.HpMax)
 		case "Livre de sort":
 			// Apprendre un nouveau sort
-			c.Skills = append(c.Skills, "Fireball") // tu peux changer le nom du sort selon le livre
+			c.Skills = append(c.Skills, "Boule de feu") // tu peux changer le nom du sort selon le livre
 			item.quantity--
-			fmt.Println("Vous apprenez un nouveau sort : Fireball !")
+			fmt.Println("Vous apprenez un nouveau sort : Boule de feu !")
 		default:
 			fmt.Printf("Vous utilisez %s (effet non implémenté).\n", item.nom)
 			item.quantity--
@@ -1286,7 +1394,7 @@ func characterTurn(c *Character, m *Monster) bool {
 			c.inv[idx].quantity = item.quantity
 		}
 
-	case "k":
+	case "k", "K":
 		// Skip : ne fait rien, regen mana déjà appliquée
 		fmt.Printf("%s choisit de concentrer son énergie et passe son tour.\n", c.Nom)
 
