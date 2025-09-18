@@ -21,7 +21,7 @@ func initGoblin(tip string) Monster {
 		}
 	case "dead":
 		return Monster{
-			Nom:        "Dead",
+			Nom:        "Death",
 			HpMax:      80,
 			Hp:         80,
 			Atk:        7,
