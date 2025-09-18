@@ -454,6 +454,18 @@ func (c *Character) Marchand() {
 MarchandLoop:
 
 	for {
+		merchantmenu := []string{
+			"===================================",
+			"Bienvenue chez le marchand !       ",
+			"                                   ",
+			"   B) Acheter                      ",
+			"   S) Vendre                       ",
+			"   Q) Quitter le marchand          ",
+			"===================================",
+		}
+		lines := CombineColumnsToLines([][]string{building, merchantmenu}, 4) // returns []string
+		FullScreenDrawCentered(lines)
+
 		char, _, err := keyboard.GetKey()
 		if err != nil {
 			log.Fatal(err)
