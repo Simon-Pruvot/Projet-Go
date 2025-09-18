@@ -1357,8 +1357,8 @@ func goblinPattern(g *Monster, c *Character, turn int) {
 }
 
 func characterTurn(c *Character, m *Monster) bool {
-	// Recharge 15 mana par tour (max ManaMax)
-	c.Mana += 15
+	// Recharge 10 mana par tour (max ManaMax)
+	c.Mana += 10
 	if c.Mana > c.ManaMax {
 		c.Mana = c.ManaMax
 	}
@@ -1579,6 +1579,7 @@ func trainingFight(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			WaitForKey("")
 			break
 		}
 
@@ -1590,6 +1591,7 @@ func trainingFight(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
+		WaitForKey("")
 		return
 	}
 }
@@ -1627,6 +1629,7 @@ func Fight1(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			WaitForKey("")
 			break
 		}
 
@@ -1638,6 +1641,7 @@ func Fight1(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
+		WaitForKey("")
 		return
 	}
 }
@@ -1675,6 +1679,7 @@ func Fight2(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			WaitForKey("")
 			break
 		}
 
@@ -1686,6 +1691,7 @@ func Fight2(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
+		WaitForKey("")
 		return
 	}
 }
@@ -1723,6 +1729,7 @@ func Fight3(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			WaitForKey("")
 			break
 		}
 
@@ -1734,6 +1741,7 @@ func Fight3(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
+		WaitForKey("")
 		return
 	}
 }
@@ -1761,4 +1769,14 @@ func LevelUp(c *Character) {
 	c.Hp = c.HpMax
 	c.Mana = c.ManaMax
 	fmt.Printf("🎉 %s passe au niveau %d ! HP: %d | Mana: %d\n", c.Nom, c.Lvl, c.HpMax, c.ManaMax)
+}
+
+// Pause until player presses a key
+func WaitForKey(msg string) {
+	if msg == "" {
+		msg = "👉 Appuyez sur une touche pour continuer..."
+	}
+	fmt.Println()
+	fmt.Println(msg)
+	_, _, _ = keyboard.GetKey()
 }

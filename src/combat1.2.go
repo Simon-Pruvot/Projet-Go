@@ -70,7 +70,7 @@ func combat2(c *Character, m *Monster) {
 	}
 	fmt.Printf("%-70s %s\n",
 		fmt.Sprintf("PV: %d / %d | Mana: %d / %d", c.Hp, c.HpMax, c.Mana, c.ManaMax),
-		fmt.Sprintf("PV: %d / %d | Mana: %d / %d", m.Hp, m.HpMax),
+		fmt.Sprintf("PV: %d / %d", m.Hp, m.HpMax),
 	)
 	fmt.Println(`
 _______________________________________________________________________________________________________________________________                                                                                      
