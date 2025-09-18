@@ -35,25 +35,18 @@ func main() {
 		player.Hp = player.Hp / 2
 	} else if chosendif == "/easy" {
 	}
-	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
 
 	baseHpMax := player.HpMax // save class's true base HP
 	player.Hp = baseHpMax
 
 	for {
+		ShowMap()
 		char, _, err := keyboard.GetKey()
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		switch char {
-		case 'i', 'I':
-			player.accessInventory(baseHpMax)
-		case 'h', 'H':
-			player.takePot()
-		case 'q', 'Q':
-			fmt.Println("Goodbye!")
-			return
 		case 'p', 'P':
 			PrintMenu()
 		MenuLoop:
@@ -78,14 +71,12 @@ func main() {
 				}
 
 			}
-		case 'd', 'D':
-			player.displayInfo()
 		case 'b', 'B':
 			player.Marchand()
 		case 'f', 'F':
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
 		case 't', 'T':
-			goblin := initGoblin()
+			goblin := initGoblin("Gobelin")
 			trainingFight(&player, goblin)
 		case 'e', 'E':
 			player.DisplayEquipment()
@@ -1242,8 +1233,41 @@ func (c *Character) craftItem(item Objects, req map[string]int) {
 	fmt.Printf("✅ Vous avez fabriqué : %s\n", item.nom)
 }
 
-func initGoblin() Monster {
+func initGoblin(tip string) Monster {
 	rand.Seed(time.Now().UnixNano())
+	if tip == "Gobelin" {
+		return Monster{
+			Nom:        "Gobelin d'entraînement",
+			HpMax:      40,
+			Hp:         40,
+			Atk:        5,
+			Initiative: rand.Intn(10) + 1,
+		}
+	} else if tip == "dead" {
+		return Monster{
+			Nom:        "Dead",
+			HpMax:      80,
+			Hp:         80,
+			Atk:        7,
+			Initiative: rand.Intn(10) + 1,
+		}
+	} else if tip == "skeleton" {
+		return Monster{
+			Nom:        "Skeleton",
+			HpMax:      100,
+			Hp:         100,
+			Atk:        8,
+			Initiative: rand.Intn(10) + 1,
+		}
+	} else if tip == "dragon" {
+		return Monster{
+			Nom:        "Dragon",
+			HpMax:      150,
+			Hp:         150,
+			Atk:        10,
+			Initiative: rand.Intn(10) + 1,
+		}
+	}
 	return Monster{
 		Nom:        "Gobelin d'entraînement",
 		HpMax:      40,
@@ -1274,8 +1298,6 @@ func characterTurn(c *Character, m *Monster) bool {
 		c.Mana = c.ManaMax
 	}
 
-	combat(c, m)
-
 	fmt.Println("=== Votre tour ===")
 	fmt.Printf("PV: %d / %d | Mana: %d / %d\n", c.Hp, c.HpMax, c.Mana, c.ManaMax)
 	fmt.Println("Options : (A)ttaquer | (S)péciale | (M)agie | (I)nventaire | (K) Skip")
@@ -1287,8 +1309,6 @@ func characterTurn(c *Character, m *Monster) bool {
 		fmt.Println("Entrée invalide.")
 		return false
 	}
-
-	combat(c, m)
 
 	switch strings.ToLower(input) {
 	case "a":
@@ -1479,6 +1499,7 @@ func trainingFight(player *Character, goblin Monster) {
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
 		characterTurn(player, &goblin) // joueur joue
+		combat(player, &goblin)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
@@ -1501,6 +1522,55 @@ func trainingFight(player *Character, goblin Monster) {
 	}
 
 	if player.Hp <= 0 {
+		mort()
+		player.isDead()
+		fmt.Println("Vous avez été vaincu... retour au menu.")
+		return
+	}
+}
+
+func Fight1(player *Character, goblin Monster) {
+	turn := 1
+	fmt.Printf("=== Début de l'entraînement contre %s ===\n", goblin.Nom)
+
+	// Seed pour la RNG (évite d’avoir toujours le même résultat)
+	rand.Seed(time.Now().UnixNano())
+
+	// Définition du loot possible
+	lootPool := []Objects{
+		{"Fourrure de Loup", 2},
+		{"Peau de Troll", 3},
+		{"Cuir de Sanglier", 1},
+		{"Plume de Corbeau", 2},
+	}
+
+	for player.Hp > 0 && goblin.Hp > 0 {
+		fmt.Printf("\n---- Tour %d ----\n", turn)
+		characterTurn(player, &goblin) // joueur joue
+		combat2(player, &goblin)
+
+		if goblin.Hp <= 0 {
+			fmt.Printf("%s est vaincu !\n", goblin.Nom)
+
+			// Récompenses fixes
+			GainXP(player, 50)
+			player.Money += 20
+
+			// Loot aléatoire
+			randomLoot := lootPool[rand.Intn(len(lootPool))]
+			player.inv = append(player.inv, Objects{"Cuir de Sanglier", 1}) // loot 100%
+			player.inv = append(player.inv, randomLoot)
+
+			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			break
+		}
+
+		goblinPattern(&goblin, player, turn) // gobelin joue
+		turn++
+	}
+
+	if player.Hp <= 0 {
+		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
 		return
