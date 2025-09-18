@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
-
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/eiannone/keyboard"
@@ -18,6 +19,24 @@ func main() {
 	armorLegend := Objects{nom: "Armor A", quantity: 1}
 	potionLegend := Objects{nom: "Potion Rage", quantity: 1}
 
+	var objects = map[string]Objects{
+		"Armor A": {nom: "Armor A", quantity: 1},
+		"Armor B": {nom: "Armor B", quantity: 1},
+		"Armor C": {nom: "Armor C", quantity: 1},
+
+		"Chapeau A": {nom: "Chapeau A", quantity: 1},
+		"Tunique A": {nom: "Tunique A", quantity: 1},
+		"Bottes A":  {nom: "Bottes A", quantity: 1},
+
+		"Chapeau B": {nom: "Chapeau B", quantity: 1},
+		"Tunique B": {nom: "Tunique B", quantity: 1},
+		"Bottes B":  {nom: "Bottes B", quantity: 1},
+
+		"Chapeau C": {nom: "Chapeau C", quantity: 1},
+		"Tunique C": {nom: "Tunique C", quantity: 1},
+		"Bottes C":  {nom: "Bottes C", quantity: 1},
+	}
+
 	//J'appelle la fonction de l'écran de départ
 	chosendif := TextBienvenu()
 
@@ -27,8 +46,6 @@ func main() {
 	defer keyboard.Close()
 
 	player := CreateClasse()
-	baseHpMax := player.HpMax // save class's true base HP
-	player.Hp = baseHpMax
 
 	if chosendif == "/start" {
 	} else if chosendif == "/hard" {
@@ -37,6 +54,9 @@ func main() {
 	} else if chosendif == "/easy" {
 	}
 	fmt.Println("Press I to open inventory, H to drink potion, P to pause, D to display info, Q to quit.")
+
+	baseHpMax := player.HpMax // save class's true base HP
+	player.Hp = baseHpMax
 
 	for {
 		char, _, err := keyboard.GetKey()
@@ -80,8 +100,6 @@ func main() {
 			player.displayInfo()
 		case 'b', 'B':
 			player.Marchand()
-		case '9', 'ç':
-			player.UsePoison()
 		case 'f', 'F':
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
 		case 't', 'T':
@@ -97,6 +115,22 @@ func Espace(esp int, chaine1 string, chaine2 string) string {
 		chaine1 += " "
 	}
 	return chaine1 + chaine2 + string(rune(127))
+}
+
+func (c *Character) UseArmorSet(setName string) {
+	switch setName {
+	case "Armor A":
+		c.inv = append(c.inv, objects["Chapeau A"], objects["Tunique A"], objects["Bottes A"])
+		fmt.Println("🎁 Vous avez reçu Chapeau A, Tunique A et Bottes A !")
+
+	case "Armor B":
+		c.inv = append(c.inv, objects["Chapeau B"], objects["Tunique B"], objects["Bottes B"])
+		fmt.Println("🎁 Vous avez reçu Chapeau B, Tunique B et Bottes B !")
+
+	case "Armor C":
+		c.inv = append(c.inv, objects["Chapeau C"], objects["Tunique C"], objects["Bottes C"])
+		fmt.Println("🎁 Vous avez reçu Chapeau C, Tunique C et Bottes C !")
+	}
 }
 
 func (c Character) displayInfo() {
@@ -153,14 +187,20 @@ BoucleInventaire:
 
 		switch char {
 		case 'q', 'Q':
-			break BoucleInventaire
 			fmt.Println("✅ Inventoire Quite :")
+			break BoucleInventaire
 
 		case 'u', 'U':
 			index := demanderIndex(len(c.inv))
 			if index >= 0 {
-				// TODO: logique d'utilisation (potion, grimoire, etc.)
-				fmt.Println("✅ Utilisé :", c.inv[index].nom)
+				item := c.inv[index]
+				if strings.HasPrefix(item.nom, "Armor ") {
+					c.UseArmorSet(item.nom)
+					// Remove the used set
+					c.inv = append(c.inv[:index], c.inv[index+1:]...)
+				} else {
+					fmt.Println("⚠️ Cet objet ne peut pas être utilisé :", item.nom)
+				}
 			}
 
 		case 'e', 'E':
@@ -253,7 +293,7 @@ func (c *Character) upgradeInventorySlot() {
 	fmt.Printf("Capacité d'inventaire augmentée : %d (restant %d)\n", c.MaxInventorySlots, 3-c.InventoryUpgrades)
 }
 func initCharacter(nom, classe string, lvl, hpmax, hp int, inv []Objects, skills []string, equipment Equipment) Character {
-	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: 100, Skills: skills, Equipment: equipment, MaxInventorySlots: 10, InventoryUpgrades: 0, Mana: 30, ManaMax: 30}
+	return Character{Nom: nom, Classe: classe, Lvl: lvl, HpMax: hpmax, Hp: hp, inv: inv, Money: 100, Skills: skills, Equipment: equipment, MaxInventorySlots: 10, InventoryUpgrades: 0, Mana: 30, ManaMax: 30, bonusDMG: 0}
 }
 
 // Equip allows to equip an object in the right slot
@@ -278,6 +318,12 @@ func (c *Character) Equip(item Objects, slot string, baseHpMax int) {
 	case "bottes":
 		replaced = c.Equipment.Bottes
 		c.Equipment.Bottes = &item
+	case "Épée C":
+		c.bonusDMG += 5
+	case "Épée B":
+		c.bonusDMG += 10
+	case "Épée A":
+		c.bonusDMG += 15
 	default:
 		fmt.Println("⚠️ Slot inconnu :", slot)
 		return
@@ -1027,6 +1073,9 @@ func (c *Character) Forgeron(swordLegend, armorLegend, potionLegend Objects) {
 			"Herbe magique":   2,
 			"Champignon rare": 1,
 		},
+		"Potion de vie": {
+			"Cuir de Sanglier": 1,
+		},
 	}
 
 	content := []string{
@@ -1036,8 +1085,9 @@ func (c *Character) Forgeron(swordLegend, armorLegend, potionLegend Objects) {
 		"  1 - Épée A",
 		"  2 - Armor A",
 		"  3 - Potion Légendaire",
+		"  4 - Potion de vie",
 		"",
-		"Appuyez sur 1,2,3 pour fabriquer, ou Q pour quitter.",
+		"Appuyez sur 1,2,3,4 pour fabriquer, ou Q pour quitter.",
 	}
 
 	FullScreenDrawCentered(content)
@@ -1221,7 +1271,8 @@ func characterTurn(c *Character, m *Monster) bool {
 			if c.Hp > c.HpMax {
 				c.Hp = c.HpMax
 			}
-			item.quantity--
+		case "Potion de poison":
+			c.UsePoison(m)
 			fmt.Printf("Vous utilisez %s. PV : %d / %d\n", item.nom, c.Hp, c.HpMax)
 		case "Livre de sort":
 			// Apprendre un nouveau sort
@@ -1254,18 +1305,37 @@ func trainingFight(player *Character, goblin Monster) {
 	turn := 1
 	fmt.Printf("=== Début de l'entraînement contre %s ===\n", goblin.Nom)
 
+	// Seed pour la RNG (évite d’avoir toujours le même résultat)
+	rand.Seed(time.Now().UnixNano())
+
+	// Définition du loot possible
+	lootPool := []Objects{
+		{"Fourrure de Loup", 1},
+		{"Peau de Troll", 1},
+		{"Cuir de Sanglier", 1},
+		{"Plume de Corbeau", 1},
+	}
+
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
 		characterTurn(player, &goblin) // joueur joue
+
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
-			// Récompenses
+
+			// Récompenses fixes
 			GainXP(player, 50)
 			player.Money += 20
-			player.inv = append(player.inv, Objects{"Potion", 1}) // loot
-			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, 1 potion\n")
+
+			// Loot aléatoire
+			randomLoot := lootPool[rand.Intn(len(lootPool))]
+			player.inv = append(player.inv, Objects{"Cuir de Sanglier", 1}) // loot 100%
+			player.inv = append(player.inv, randomLoot)
+
+			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
 			break
 		}
+
 		goblinPattern(&goblin, player, turn) // gobelin joue
 		turn++
 	}

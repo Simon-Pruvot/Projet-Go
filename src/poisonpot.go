@@ -5,33 +5,30 @@ import (
 	"time"
 )
 
-func (c *Character) UsePoison() {
+func (c *Character) UsePoison(target *Monster) {
 	for i := 0; i < len(c.inv); i++ {
 		if c.inv[i].nom == "Potion de poison" && c.inv[i].quantity > 0 {
+			// Consommer la potion
 			c.inv[i].quantity--
-			c.Hp -= 10
-			fmt.Println("You make damage to your enemi")
-			fmt.Println(``)
-			time.Sleep(1 * time.Second)
-			c.Hp -= 10
-			fmt.Println("You make damage to your enemi")
-			fmt.Println(``)
-			time.Sleep(1 * time.Second)
-			c.Hp -= 10
-			fmt.Println("You make damage to your enemi")
-			fmt.Println(``)
-			if c.Hp > c.HpMax {
-				c.Hp = c.HpMax
-			}
-			fmt.Println("End of poison")
-			fmt.Println(``)
 
-			// if no more left → remove it
+			// Dégâts sur 3 tours (10 PV chaque)
+			for j := 0; j < 3; j++ {
+				target.Hp -= 10
+				if target.Hp < 0 {
+					target.Hp = 0
+				}
+				fmt.Printf("☠️ Le poison inflige 10 dégâts à %s ! (PV restants : %d/%d)\n", target.Nom, target.Hp, target.HpMax)
+				time.Sleep(1 * time.Second)
+			}
+
+			fmt.Println("☠️ Le poison s'est dissipé.")
+
+			// Supprimer la potion si quantité = 0
 			if c.inv[i].quantity == 0 {
 				c.inv = append(c.inv[:i], c.inv[i+1:]...)
 			}
 			return
 		}
 	}
-	fmt.Println("⚠️ No potion of poison left!")
+	fmt.Println("⚠️ Vous n’avez plus de potion de poison !")
 }
