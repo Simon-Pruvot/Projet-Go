@@ -16,12 +16,6 @@ func main() {
 	//J'appelle la fonction de l'écran de départ
 	chosendif := TextBienvenu()
 	lorefirst()
-
-	if err := keyboard.Open(); err != nil {
-		log.Fatal(err)
-	}
-	defer keyboard.Close()
-
 	player := CreateClasse()
 
 	//Histoire ou non
@@ -39,7 +33,13 @@ func main() {
 		} else if player.Classe == "nain" {
 			lorenain()
 		}
+	} else {
 	}
+
+	if err := keyboard.Open(); err != nil {
+		log.Fatal(err)
+	}
+	defer keyboard.Close()
 
 	if chosendif == "/start" {
 	} else if chosendif == "/hard" {
