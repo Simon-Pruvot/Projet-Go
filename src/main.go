@@ -182,7 +182,7 @@ BoucleInventaire:
 					c.UseArmorSet(item.nom)
 					// Remove the used set
 					c.inv = append(c.inv[:index], c.inv[index+1:]...)
-				} else if strings.HasPrefix(item.nom, "Livre de Sort ") {
+				} else if strings.HasPrefix(item.nom, "Livre ") {
 					c.useItem(c.inv[index].nom)
 				} else {
 					fmt.Println("⚠️ Cet objet ne peut pas être utilisé :", item.nom)
@@ -426,6 +426,7 @@ func (c *Character) Marchand() {
 	armorRare := Objects{nom: "Armor B", quantity: 1}
 
 	LivFeu := Objects{nom: "Livre de Sort : Boule de feu", quantity: 1}
+	LivCoup := Objects{nom: "Livre : Coup de poing", quantity: 1}
 
 	//resurces
 	rock := Objects{nom: "Rock", quantity: 1}
@@ -680,6 +681,27 @@ MarchandLoop:
 				case 'q', 'Q':
 					fmt.Println("Au revoir !")
 					break AchatLoop
+
+				case ')', '°': // Acheter Livre de Sort
+					if c.Money >= 25 {
+						c.Money -= 25
+						added := false
+						for i := range c.inv {
+							if c.inv[i].nom == "Livre : Coup de poing" {
+								c.inv[i].quantity++
+								fmt.Println("✅")
+								added = true
+								break
+							}
+						}
+						if !added {
+							c.addInventory(LivCoup)
+							fmt.Println("✅")
+						}
+					} else {
+						fmt.Println("Need More Gold")
+					}
+
 				}
 			}
 
@@ -937,6 +959,13 @@ func (c *Character) useItem(objName string) {
 			}
 			if objName == "Livre de Sort : Boule de feu" {
 				c.spellBook("Boule de feu")
+				c.inv[i].quantity--
+				if c.inv[i].quantity == 0 {
+					c.inv = append(c.inv[:i], c.inv[i+1:]...)
+				}
+				return
+			} else if objName == "Livre : Coup de poing" {
+				c.spellBook("Coup de poing")
 				c.inv[i].quantity--
 				if c.inv[i].quantity == 0 {
 					c.inv = append(c.inv[:i], c.inv[i+1:]...)
@@ -1214,13 +1243,13 @@ func (c *Character) craftItem(item Objects, req map[string]int) {
 }
 
 func initGoblin() Monster {
-	rand.Seed(time.Now().UnixNano()) // seed once at the start
+	rand.Seed(time.Now().UnixNano())
 	return Monster{
 		Nom:        "Gobelin d'entraînement",
 		HpMax:      40,
 		Hp:         40,
 		Atk:        5,
-		Initiative: rand.Intn(10) + 1, // 1 to 10
+		Initiative: rand.Intn(10) + 1,
 	}
 }
 
@@ -1262,7 +1291,7 @@ func characterTurn(c *Character, m *Monster) bool {
 	combat(c, m)
 
 	switch strings.ToLower(input) {
-	case "a", "A":
+	case "a":
 		// Attaque basique : 5 dégâts, coût 10 mana
 		if c.Mana < 10 {
 			fmt.Println("Pas assez de mana pour attaque basique.")
@@ -1273,9 +1302,13 @@ func characterTurn(c *Character, m *Monster) bool {
 		if m.Hp < 0 {
 			m.Hp = 0
 		}
+		c.Initiative += 2 // gain d'initiative pour attaque simple
+		if c.Initiative > 10 {
+			c.Initiative = 10
+		}
 		fmt.Printf("%s utilise Attaque basique et inflige %d dégâts à %s\n", c.Nom, 5, m.Nom)
 
-	case "s", "S":
+	case "s":
 		// Spéciale : 12 dégâts, coût 20 mana
 		if c.Mana < 20 {
 			fmt.Println("Pas assez de mana pour attaque spéciale.")
@@ -1286,9 +1319,13 @@ func characterTurn(c *Character, m *Monster) bool {
 		if m.Hp < 0 {
 			m.Hp = 0
 		}
+		c.Initiative -= 1 // perte d'initiative pour spéciale
+		if c.Initiative < 0 {
+			c.Initiative = 0
+		}
 		fmt.Printf("%s utilise Attaque spéciale et inflige %d dégâts à %s\n", c.Nom, 12, m.Nom)
 
-	case "m", "M":
+	case "m":
 		// Magie : uniquement si on a appris au moins un sort
 		if len(c.Skills) == 0 {
 			fmt.Println("Vous n'avez appris aucun sort.")
@@ -1298,58 +1335,61 @@ func characterTurn(c *Character, m *Monster) bool {
 			fmt.Println("Pas assez de mana pour lancer un sort.")
 			return false
 		}
-		// Pour l'instant : utiliser le premier sort appris
 		for {
 			var inputspell string
 			_, err := fmt.Scanln(&inputspell)
 			if err != nil {
 				fmt.Println("Entrée invalide. Réessayez.")
-				continue // ask again
+				continue
 			}
 
+			valid := false
 			switch inputspell {
 			case "&", "1":
-				if len(c.Skills) < 1 {
-					fmt.Println("Vous n'avez pas ce sort. Choisissez un sort valide.")
-					continue
-				}
-				if c.Mana < 30 {
-					fmt.Println("Pas assez de mana !")
+				if len(c.Skills) < 1 || c.Mana < 30 {
+					fmt.Println("Choix invalide ou pas assez de mana.")
 					continue
 				}
 				spell := c.Skills[0]
 				c.Mana -= 30
-				m.Hp -= 20
+				m.Hp -= 18
 				if m.Hp < 0 {
 					m.Hp = 0
 				}
 				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
-				return true // valid choice, stop the loop
+				valid = true
+				c.Initiative -= 2 // perte d'initiative pour sort
 
 			case "é", "2":
-				if len(c.Skills) < 2 {
-					fmt.Println("Vous n'avez pas ce sort. Choisissez un sort valide.")
-					continue
-				}
-				if c.Mana < 30 {
-					fmt.Println("Pas assez de mana !")
+				if len(c.Skills) < 2 || c.Mana < 30 {
+					fmt.Println("Choix invalide ou pas assez de mana.")
 					continue
 				}
 				spell := c.Skills[1]
-				c.Mana -= 30
-				m.Hp -= 20
+				c.Mana -= 15
+				m.Hp -= 8
 				if m.Hp < 0 {
 					m.Hp = 0
 				}
 				fmt.Printf("%s lance %s et inflige %d dégâts à %s\n", c.Nom, spell, 20, m.Nom)
-				return true // valid choice, stop the loop
+				valid = true
+				c.Initiative -= 2 // perte d'initiative pour sort
 
 			default:
 				fmt.Println("Option invalide, réessayez.")
 			}
+
+			if valid {
+				if c.Initiative < 0 {
+					c.Initiative = 0
+				} else if c.Initiative > 10 {
+					c.Initiative = 10
+				}
+				break
+			}
 		}
 
-	case "i", "I":
+	case "i":
 		// Inventaire
 		if len(c.inv) == 0 {
 			fmt.Println("Inventaire vide.")
@@ -1367,25 +1407,26 @@ func characterTurn(c *Character, m *Monster) bool {
 			return false
 		}
 		item := c.inv[idx]
-
-		// Exemple : livres et potions
 		switch item.nom {
 		case "Potion de vie":
-			c.Hp += 20
+			c.Hp += 50
 			if c.Hp > c.HpMax {
 				c.Hp = c.HpMax
 			}
+			c.Initiative += 1 // gain d'initiative pour potions
 		case "Potion de poison":
 			c.UsePoison(m)
 			fmt.Printf("Vous utilisez %s. PV : %d / %d\n", item.nom, c.Hp, c.HpMax)
+			c.Initiative += 1
 		case "Livre de sort":
-			// Apprendre un nouveau sort
-			c.Skills = append(c.Skills, "Boule de feu") // tu peux changer le nom du sort selon le livre
+			c.Skills = append(c.Skills, "Boule de feu")
 			item.quantity--
 			fmt.Println("Vous apprenez un nouveau sort : Boule de feu !")
+			c.Initiative += 1
 		default:
 			fmt.Printf("Vous utilisez %s (effet non implémenté).\n", item.nom)
 			item.quantity--
+			c.Initiative += 1
 		}
 
 		if item.quantity <= 0 {
@@ -1394,12 +1435,27 @@ func characterTurn(c *Character, m *Monster) bool {
 			c.inv[idx].quantity = item.quantity
 		}
 
-	case "k", "K":
-		// Skip : ne fait rien, regen mana déjà appliquée
+		if c.Initiative > 10 {
+			c.Initiative = 10
+		}
+
+	case "k":
+		// Skip
 		fmt.Printf("%s choisit de concentrer son énergie et passe son tour.\n", c.Nom)
+		c.Initiative += 3
+		if c.Initiative > 10 {
+			c.Initiative = 10
+		}
 
 	default:
 		fmt.Println("Option inconnue, tour passé.")
+	}
+
+	// S'assurer que l'initiative est toujours entre 0 et 10
+	if c.Initiative < 0 {
+		c.Initiative = 0
+	} else if c.Initiative > 10 {
+		c.Initiative = 10
 	}
 
 	return m.Hp <= 0
@@ -1445,7 +1501,9 @@ func trainingFight(player *Character, goblin Monster) {
 	}
 
 	if player.Hp <= 0 {
+		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
+		return
 	}
 }
 
