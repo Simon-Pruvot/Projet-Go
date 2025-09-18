@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func mort() string {
@@ -34,7 +33,6 @@ func mort() string {
                                     ...... OO! ................. ON! .......
                                        ................................
 	`)
-	time.Sleep(1 * time.Second)
 	fmt.Println(`
                                                            __                                                           
  _____                    _                            _  |  |   _____                           _               

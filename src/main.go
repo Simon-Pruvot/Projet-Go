@@ -44,7 +44,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		ShowMap()
 		switch char {
 		case 'p', 'P':
 			PrintMenu()
@@ -91,6 +90,8 @@ func main() {
 		case 'l', 'L':
 			monst := initGoblin("dragon")
 			Fight3(&player, monst)
+		default:
+			ShowMap()
 		}
 	}
 }
@@ -136,7 +137,7 @@ func (c Character) displayInfo() {
 }
 
 func (c *Character) accessInventory(baseHpMax int) {
-	slots := 10
+	slots := 10 * (c.InventoryUpgrades + 1)
 	perRow := 5
 
 BoucleInventaire:
@@ -385,37 +386,39 @@ func (c Character) DisplayEquipment() {
 
 func (c *Character) Marchand() {
 	building := []string{
-		"=========================================",
-		"=========================================",
-		"     _______                             ",
-		"     ||     |   |      |   \\     /      ",
-		"     ||    _|   |      |    \\   /       ",
-		"     ||---|_    |      |     \\ /        ",
-		"     ||     |   |      |       |         ",
-		"     ||-----|   |______|       |         ",
-		"                                         ",
-		"                                         ",
-		"                                         ",
-		"        __________________________       ",
-		"       /                         \\      ",
-		"      /                           \\     ",
-		"     /_____________________________\\    ",
-		"    |   /-_      /-_     /-_      /|     ",
-		"    |_-/   \\-_-/   \\-_-/   \\-_-/|     ",
-		"    |          _______             |     ",
-		"    |         /       \\           |     ",
-		"    |         | .   . |            |     ",
-		"    |         |  -_-  |            |     ",
-		"    |         \\-------/           |     ",
-		"    |              |               |     ",
-		"    |              |               |     ",
-		"  ------------------------------------   ",
-		"   | |============================| |    ",
-		"   | |             |              | |    ",
-		"   | |            / \\            | |    ",
-		"   | |           /   \\           | |    ",
-		"=========================================",
-		"=========================================",
+		"     .     .",
+		"                               !!!!!!!",
+		"                       .       [[[|]]]    .",
+		"                       !!!!!!!!|--_--|!!!!!",
+		"                       [[[[[[[[\\_(X)_/]]]]]",
+		"               .-.     /-_--__-/_--_-\\-_--\\",
+		"               |=|    /-_---__/__-__-\\__-_-\\",
+		"           . . |=| ._/-__-__\\===========/-__\\_",
+		"           !!!!!!!!!\\========[ /]]|[[\\ ]=====/",
+		"          /-_--_-_-_[[[[[[[[[||==  == ||]]]]]]",
+		"         /-_--_--_--_|=  === ||=/^|^\\ ||== =|",
+		"        /-_-/^|^\\-_--| /^|^\\=|| | | | ||^\\= |",
+		"       /_-_-| | |-_--|=| | | ||=|_|_|=||\"|==|",
+		"      /-__--|_|_|_-_-| |_|_|=||______=||_| =|",
+		"     /_-__--_-__-___-|_=__=_.`---------'._=_|__",
+		"    /-----------------------\\===========/-----/",
+		"   ^^^\\^^^^^^^^^^^^^^^^^^^^^^[[|]]|[[|]]=====/",
+		"       |.' ..==::'\"'::==.. '.[ /~~~~~\\ ]]]]]]]",
+		"       | .'=[[[|]]|[[|]]]=`._||==  =  || =\\ ]",
+		"       ||== =|/ _____ \\|== = ||=/^|^\\=||^\\ ||",
+		"       || == `||-----||' = ==|| | | |=|| |=||",
+		"       ||= == ||:^s^:|| = == ||=| | | || |=||",
+		"       || = = ||:___:||= == =|| |_|_| ||_|=||",
+		"      _||_ = =||o---.|| = ==_||_= == =||==_||_",
+		"      \\__/= = ||:   :||= == \\__/[][][][][]\\__/",
+		"      [||]= ==||:___:|| = = [||]\\\\//\\\\//\\\\[||]",
+		"      }  {---'\"'-----'\"'- --}  {//\\\\//\\\\//}  {",
+		"    __[==]__________________[==]\\\\//\\\\//\\\\[==]_",
+		"   |`|~~~~|================|~~~~|~~~~~~~~|~~~~||",
+		"jgs|^| ^  |================|^   | ^ ^^ ^ |  ^ ||",
+		"  \\|//\\/^|/==============\\|/^\\\\\\^/^\\.\\^///\\\\//|///",
+		" \\\\///\\\\\\//===============\\\\//\\\\///\\\\\\\\////\\\\\\/////",
+		" \"\"'\"\"'\"\"\".'..'. ' '. ''..'.'\"\"'\"\"'\"\"'\"\"''\"''\"''\"\"",
 	}
 
 	//objects
@@ -485,6 +488,7 @@ MarchandLoop:
 			"   B) Acheter                      ",
 			"   S) Vendre                       ",
 			"   Q) Quitter le marchand          ",
+			"                                   ",
 			"===================================",
 		}
 		lines := CombineColumnsToLines([][]string{building, merchantmenu}, 4) // returns []string
@@ -672,7 +676,7 @@ MarchandLoop:
 					} else {
 						fmt.Println("Need More Gold")
 					}
-				case '9': // Augmentation d’inventaire
+				case '9', 'ç': // Augmentation d’inventaire
 					if c.Money >= 30 {
 						c.Money -= 30
 						c.upgradeInventorySlot()
@@ -935,7 +939,6 @@ MarchandLoop:
 
 func (c *Character) isDead() {
 	if c.Hp <= 0 {
-		fmt.Println("U DEAD")
 		c.Hp = c.HpMax / 2
 	}
 }
@@ -1552,7 +1555,7 @@ func trainingFight(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-
+	combat0(player, &goblin)
 	// Définition du loot possible
 	lootPool := []Objects{
 		{"Fourrure de Loup", 1},
@@ -1564,7 +1567,7 @@ func trainingFight(player *Character, goblin Monster) {
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
 		characterTurn(player, &goblin) // joueur joue
-		combat(player, &goblin)
+		combat0(player, &goblin)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
@@ -1579,7 +1582,6 @@ func trainingFight(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			WaitForKey("")
 			break
 		}
 
@@ -1591,7 +1593,6 @@ func trainingFight(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
-		WaitForKey("")
 		return
 	}
 }
@@ -1602,7 +1603,7 @@ func Fight1(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-
+	combat(player, &goblin)
 	// Définition du loot possible
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
@@ -1629,7 +1630,6 @@ func Fight1(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			WaitForKey("")
 			break
 		}
 
@@ -1641,7 +1641,6 @@ func Fight1(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
-		WaitForKey("")
 		return
 	}
 }
@@ -1652,7 +1651,7 @@ func Fight2(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-
+	combat2(player, &goblin)
 	// Définition du loot possible
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
@@ -1679,7 +1678,6 @@ func Fight2(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			WaitForKey("")
 			break
 		}
 
@@ -1691,7 +1689,6 @@ func Fight2(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
-		WaitForKey("")
 		return
 	}
 }
@@ -1702,7 +1699,7 @@ func Fight3(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-
+	combat3(player, &goblin)
 	// Définition du loot possible
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
@@ -1729,7 +1726,6 @@ func Fight3(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			WaitForKey("")
 			break
 		}
 
@@ -1741,7 +1737,6 @@ func Fight3(player *Character, goblin Monster) {
 		mort()
 		player.isDead()
 		fmt.Println("Vous avez été vaincu... retour au menu.")
-		WaitForKey("")
 		return
 	}
 }
@@ -1769,14 +1764,4 @@ func LevelUp(c *Character) {
 	c.Hp = c.HpMax
 	c.Mana = c.ManaMax
 	fmt.Printf("🎉 %s passe au niveau %d ! HP: %d | Mana: %d\n", c.Nom, c.Lvl, c.HpMax, c.ManaMax)
-}
-
-// Pause until player presses a key
-func WaitForKey(msg string) {
-	if msg == "" {
-		msg = "👉 Appuyez sur une touche pour continuer..."
-	}
-	fmt.Println()
-	fmt.Println(msg)
-	_, _, _ = keyboard.GetKey()
 }
