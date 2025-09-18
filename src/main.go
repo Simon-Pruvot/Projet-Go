@@ -23,6 +23,24 @@ func main() {
 
 	player := CreateClasse()
 
+	//Histoire ou non
+	var reponse string
+	fmt.Print("Voulez-vous voir l'histoire ? (oui/non) : ")
+	fmt.Scanln(&reponse)
+
+	history := false
+	if reponse == "oui" || reponse == "OUI" {
+		history = true
+		lorefirst()
+		if player.Classe == "elfe" {
+			loreelfe()
+		} else if player.Classe == "humain" {
+			lorehumain()
+		} else if player.Classe == "nain" {
+			lorenain()
+		}
+	}
+
 	if chosendif == "/start" {
 	} else if chosendif == "/hard" {
 		player.HpMax = player.HpMax / 2
@@ -70,15 +88,24 @@ func main() {
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
 			ShowMap()
 		case 't', 'T':
+			if history {
+				loreelfe2()
+			}
 			monst := initGoblin("Gobelin")
 			trainingFight(&player, monst)
 		case 'e', 'E':
 			player.DisplayEquipment()
 			ShowMap()
 		case 'n', 'N':
+			if history {
+				loreboss3()
+			}
 			monst := initGoblin("dead")
 			Fight1(&player, monst)
 		case 'm', 'M':
+			if history {
+				loresquelette()
+			}
 			monst := initGoblin("skeleton")
 			Fight2(&player, monst)
 		case 'l', 'L':

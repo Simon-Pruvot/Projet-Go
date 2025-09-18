@@ -19,8 +19,8 @@ func lorefin() string {
                          |___|                                                                                                                
 																														
 																														
-	`)
-	time.Sleep(2 * time.Second)
+                                                                                           `)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                              
  __             _           _            _                 _   _            _                                 _        _         _                     _     
@@ -30,7 +30,7 @@ func lorefin() string {
                          |___|                                                                                                                                                                                                                                                                                                                     
                                                                                                                                                                                                      
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                      
  __               ___ _                                       _       _                 _        _                _            _ _                   
@@ -41,7 +41,7 @@ func lorefin() string {
                                                                                                                                                             
                                                                                                                                                                                                                                         
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                                
  _____                    _              _ _ _                _                  _       _ _     _   _                    _                                    
@@ -52,7 +52,7 @@ func lorefin() string {
 
 														
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                           
  __               _     _                          _       _                   _     _         _ _                    _     _                       _     
@@ -63,7 +63,7 @@ func lorefin() string {
                                                                                                                                                             
                                                                                                          
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                           
  __                                                  _              _ _                     _                 _               _               _           
@@ -74,7 +74,7 @@ func lorefin() string {
                                                                                           
                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                       
  __           ___             _              _                          _                                                     _                       
@@ -86,7 +86,7 @@ func lorefin() string {
                                                                                                                                                                                                   
                                                                                                                                                                                                      
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                               
  __                       _ _                        _            _ _ _                                            _          _ _             
@@ -97,7 +97,7 @@ func lorefin() string {
                                                                                                                                                       
                                                                                                                     
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                         
  __               _                        _ _              _                    _          _           _               

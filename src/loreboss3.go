@@ -19,8 +19,8 @@ func loreboss3() string {
                                                                                                                         |___|   
 																														
 																														
-	`)
-	time.Sleep(2 * time.Second)
+                                                                                           `)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                       
  _____                                    _                           _ _ _                      _                        _           
@@ -30,7 +30,7 @@ func loreboss3() string {
                                                   |_|                                                                                                                                                                                        
                                                                                                                                                                                                      
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                          
  _____                        ___ ___ _                  _                      _           _                                        _             _     
@@ -42,7 +42,7 @@ func loreboss3() string {
                                                                                                                                                                                                                                                                                                
                                                                                                                                                                                                      
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                        
  _____                                     _                           _ _ _                      _                        _           

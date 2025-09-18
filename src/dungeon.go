@@ -39,7 +39,12 @@ func trainingFight(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			break
+			for {
+				fmt.Println("Entrée une letter pour continuer...")
+				var input string
+				fmt.Scanln(&input) // Waits until player presses Enter
+				break
+			}
 		}
 
 		goblinPattern(&goblin, player, turn) // gobelin joue
@@ -49,7 +54,12 @@ func trainingFight(player *Character, goblin Monster) {
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		fmt.Println("Vous avez été vaincu... retour au menu.")
+		for {
+			fmt.Println("Entrée une letter pour continuer...")
+			var input string
+			fmt.Scanln(&input) // Waits until player presses Enter
+			break
+		}
 		return
 	}
 }
@@ -87,7 +97,12 @@ func Fight1(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			break
+			for {
+				fmt.Println("Entrée une letter pour continuer...")
+				var input string
+				fmt.Scanln(&input) // Waits until player presses Enter
+				break
+			}
 		}
 
 		goblinPattern(&goblin, player, turn) // gobelin joue
@@ -97,7 +112,12 @@ func Fight1(player *Character, goblin Monster) {
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		fmt.Println("Vous avez été vaincu... retour au menu.")
+		for {
+			fmt.Println("Entrée une letter pour continuer...")
+			var input string
+			fmt.Scanln(&input) // Waits until player presses Enter
+			break
+		}
 		return
 	}
 }
@@ -135,7 +155,12 @@ func Fight2(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			break
+			for {
+				fmt.Println("Entrée une letter pour continuer...")
+				var input string
+				fmt.Scanln(&input) // Waits until player presses Enter
+				break
+			}
 		}
 
 		goblinPattern(&goblin, player, turn) // gobelin joue
@@ -145,7 +170,12 @@ func Fight2(player *Character, goblin Monster) {
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		fmt.Println("Vous avez été vaincu... retour au menu.")
+		for {
+			fmt.Println("Entrée une letter pour continuer...")
+			var input string
+			fmt.Scanln(&input) // Waits until player presses Enter
+			break
+		}
 		return
 	}
 }
@@ -183,7 +213,13 @@ func Fight3(player *Character, goblin Monster) {
 			player.inv = append(player.inv, randomLoot)
 
 			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
-			break
+			lorefin()
+			for {
+				fmt.Println("Entrée une letter pour continuer...")
+				var input string
+				fmt.Scanln(&input) // Waits until player presses Enter
+				break
+			}
 		}
 
 		goblinPattern(&goblin, player, turn) // gobelin joue
@@ -193,7 +229,12 @@ func Fight3(player *Character, goblin Monster) {
 	if player.Hp <= 0 {
 		mort()
 		player.isDead()
-		fmt.Println("Vous avez été vaincu... retour au menu.")
+		for {
+			fmt.Println("Entrée une letter pour continuer...")
+			var input string
+			fmt.Scanln(&input) // Waits until player presses Enter
+			break
+		}
 		return
 	}
 }

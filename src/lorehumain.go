@@ -19,8 +19,8 @@ func lorehumain() string {
                                                    |_|                        |___|                               
                                                                                                                                   
                                                                                              
-	`)
-	time.Sleep(2 * time.Second)
+                                                                                           `)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                          
  _____     _              ___           _ _ _        ___     _              _                           _              _                 
@@ -29,7 +29,7 @@ func lorehumain() string {
  \___/|___|_| |_| |___|  |_| |__,|_|_|_|_|_|_|___|  |_| |___|_|    |  _|_| |_|___|___|  |  _|__,|_|    |_|  |___|_|_|_|___|_| |___|_|    
                                                                    |_|                  |_|                                                                                                             
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                        
  _____                                     _                                                                       _         _         
@@ -38,7 +38,7 @@ func lorehumain() string {
  \___/|___|___|___|  |__,|\_/|___|___|   _| |___|_| |___|   \_/|___|_|_|_  |___|__,|_|_|___|___|  |___|__,|_|_|_  |_|__,|_|_|_| |___|_|
                                         |___|                          |___|                                  |___|                                                                                                                                                                                     
                                                                                            `)
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	fmt.Println(`
                                                                                                                                                 
  _____     _                                                         _                  _                          _                            
