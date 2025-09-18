@@ -27,13 +27,15 @@ type Character struct {
 	ManaMax           int
 	XP                int
 	bonusDMG          int
+	Initiative        int
 }
 
 type Monster struct {
-	Nom   string
-	HpMax int
-	Hp    int
-	Atk   int
+	Nom        string
+	HpMax      int
+	Hp         int
+	Atk        int
+	Initiative int
 }
 
 var objects = map[string]Objects{
