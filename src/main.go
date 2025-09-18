@@ -40,12 +40,11 @@ func main() {
 	player.Hp = baseHpMax
 
 	for {
-		ShowMap()
 		char, _, err := keyboard.GetKey()
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		ShowMap()
 		switch char {
 		case 'p', 'P':
 			PrintMenu()
@@ -73,13 +72,25 @@ func main() {
 			}
 		case 'b', 'B':
 			player.Marchand()
+			ShowMap()
 		case 'f', 'F':
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
+			ShowMap()
 		case 't', 'T':
-			goblin := initGoblin("Gobelin")
-			trainingFight(&player, goblin)
+			monst := initGoblin("Gobelin")
+			trainingFight(&player, monst)
 		case 'e', 'E':
 			player.DisplayEquipment()
+			ShowMap()
+		case 'n', 'N':
+			monst := initGoblin("dead")
+			Fight1(&player, monst)
+		case 'm', 'M':
+			monst := initGoblin("skeleton")
+			Fight2(&player, monst)
+		case 'l', 'L':
+			monst := initGoblin("dragon")
+			Fight3(&player, monst)
 		}
 	}
 }
@@ -1154,7 +1165,38 @@ func (c *Character) Forgeron(swordLegend, armorLegend, potionLegend Objects) {
 		},
 	}
 
+	lgb := []string{
+		"         .",
+		"        ('",
+		"        '|",
+		"        |'",
+		"       [::]",
+		"       [::]   _......_",
+		"       [::].-'      _.-`.",
+		"       [:.'    .-. '-._.-`.",
+		"       [/ /\\   |  \\        `-..",
+		"       / / |   `-.'      .-.   `-.",
+		"      /  `-'            (   `.    `.",
+		"     |           /\\      `-._/      \\",
+		"     '    .'\\   /  `.           _.-'|",
+		"    /    /  /   \\_.-'        _.':;:/",
+		"  .'     \\_/             _.-':;_.-'",
+		" /   .-.             _.-' \\;.-'",
+		"/   (   \\       _..-'     |",
+		"\\    `._/  _..-'    .--.  |",
+		" `-.....-'/  _ _  .'    '.|",
+		"          | |_|_| |      | \\  (o)",
+		"     (o)  | |_|_| |      | | (\\'/)",
+		"    (\\'/)/  ''''' |     o|  \\;:;",
+		"     :;  |        |      |  |/)",
+		" LGB  ;: `-.._    /__..--'\\.' ;:",
+		"          :;  `--' :;   :;",
+	}
+
 	content := []string{
+		"",
+		"",
+		"",
 		"",
 		"Bienvenue chez le Forgeron ⚒️",
 		"Objets que vous pouvez fabriquer (5 Gold chacun) :",
@@ -1166,7 +1208,8 @@ func (c *Character) Forgeron(swordLegend, armorLegend, potionLegend Objects) {
 		"Appuyez sur 1,2,3,4 pour fabriquer, ou Q pour quitter.",
 	}
 
-	FullScreenDrawCentered(content)
+	lines := CombineColumnsToLines([][]string{lgb, content}, 4)
+	FullScreenDrawCentered(lines)
 
 ForgeronLoop:
 	for {
@@ -1176,16 +1219,38 @@ ForgeronLoop:
 		}
 
 		switch char {
-		case '1':
+		case '1', '&':
+			fmt.Println("🔨 Ressources nécessaires pour Épée A :")
+			for res, qty := range reqs[swordLegend.nom] {
+				fmt.Printf("   - %s x%d\n", res, qty)
+			}
 			c.craftItem(swordLegend, reqs[swordLegend.nom])
-		case '2':
+
+		case '2', 'é':
+			fmt.Println("🔨 Ressources nécessaires pour Armor A :")
+			for res, qty := range reqs[armorLegend.nom] {
+				fmt.Printf("   - %s x%d\n", res, qty)
+			}
 			c.craftItem(armorLegend, reqs[armorLegend.nom])
-		case '3':
+
+		case '3', '"':
+			fmt.Println("🔨 Ressources nécessaires pour Potion Légendaire :")
+			for res, qty := range reqs[potionLegend.nom] {
+				fmt.Printf("   - %s x%d\n", res, qty)
+			}
 			c.craftItem(potionLegend, reqs[potionLegend.nom])
+
+		case '4', '\'':
+			fmt.Println("🔨 Ressources nécessaires pour Potion de vie :")
+			for res, qty := range reqs["Potion de vie"] {
+				fmt.Printf("   - %s x%d\n", res, qty)
+			}
+			c.craftItem(Objects{"Potion de vie", 1}, reqs["Potion de vie"])
+
 		case 'q', 'Q':
-			fmt.Println("👋 Le forgeron vous salue !")
 			break ForgeronLoop
 		}
+
 	}
 }
 
@@ -1547,7 +1612,103 @@ func Fight1(player *Character, goblin Monster) {
 	for player.Hp > 0 && goblin.Hp > 0 {
 		fmt.Printf("\n---- Tour %d ----\n", turn)
 		characterTurn(player, &goblin) // joueur joue
+		combat(player, &goblin)
+
+		if goblin.Hp <= 0 {
+			fmt.Printf("%s est vaincu !\n", goblin.Nom)
+
+			// Récompenses fixes
+			GainXP(player, 50)
+			player.Money += 20
+
+			// Loot aléatoire
+			randomLoot := lootPool[rand.Intn(len(lootPool))]
+			player.inv = append(player.inv, Objects{"Cuir de Sanglier", 1}) // loot 100%
+			player.inv = append(player.inv, randomLoot)
+
+			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			break
+		}
+
+		goblinPattern(&goblin, player, turn) // gobelin joue
+		turn++
+	}
+
+	if player.Hp <= 0 {
+		mort()
+		player.isDead()
+		fmt.Println("Vous avez été vaincu... retour au menu.")
+		return
+	}
+}
+
+func Fight2(player *Character, goblin Monster) {
+	turn := 1
+	fmt.Printf("=== Début de l'entraînement contre %s ===\n", goblin.Nom)
+
+	// Seed pour la RNG (évite d’avoir toujours le même résultat)
+	rand.Seed(time.Now().UnixNano())
+
+	// Définition du loot possible
+	lootPool := []Objects{
+		{"Fourrure de Loup", 2},
+		{"Peau de Troll", 3},
+		{"Cuir de Sanglier", 1},
+		{"Plume de Corbeau", 2},
+	}
+
+	for player.Hp > 0 && goblin.Hp > 0 {
+		fmt.Printf("\n---- Tour %d ----\n", turn)
+		characterTurn(player, &goblin) // joueur joue
 		combat2(player, &goblin)
+
+		if goblin.Hp <= 0 {
+			fmt.Printf("%s est vaincu !\n", goblin.Nom)
+
+			// Récompenses fixes
+			GainXP(player, 50)
+			player.Money += 20
+
+			// Loot aléatoire
+			randomLoot := lootPool[rand.Intn(len(lootPool))]
+			player.inv = append(player.inv, Objects{"Cuir de Sanglier", 1}) // loot 100%
+			player.inv = append(player.inv, randomLoot)
+
+			fmt.Printf("🎁 Récompenses : 50 XP, 20 or, +1 %s\n", randomLoot.nom)
+			break
+		}
+
+		goblinPattern(&goblin, player, turn) // gobelin joue
+		turn++
+	}
+
+	if player.Hp <= 0 {
+		mort()
+		player.isDead()
+		fmt.Println("Vous avez été vaincu... retour au menu.")
+		return
+	}
+}
+
+func Fight3(player *Character, goblin Monster) {
+	turn := 1
+	fmt.Printf("=== Début de l'entraînement contre %s ===\n", goblin.Nom)
+
+	// Seed pour la RNG (évite d’avoir toujours le même résultat)
+	rand.Seed(time.Now().UnixNano())
+
+	// Définition du loot possible
+	lootPool := []Objects{
+		{"Fourrure de Loup", 2},
+		{"Peau de Troll", 3},
+		{"Cuir de Sanglier", 1},
+		{"Plume de Corbeau", 2},
+	}
+
+	for player.Hp > 0 && goblin.Hp > 0 {
+		fmt.Printf("\n---- Tour %d ----\n", turn)
+		characterTurn(player, &goblin) // joueur joue
+		combat3(player, &goblin)
 
 		if goblin.Hp <= 0 {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
