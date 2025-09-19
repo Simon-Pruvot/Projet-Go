@@ -22,25 +22,25 @@ func (c *Character) initGoblin(tip string) Monster {
 	case "dead":
 		return Monster{
 			Nom:        "Death",
-			HpMax:      80 * c.Lvl,
-			Hp:         80 * c.Lvl,
-			Atk:        7 * c.Lvl,
+			HpMax:      80,
+			Hp:         80,
+			Atk:        7,
 			Initiative: rand.Intn(10) + 1,
 		}
 	case "skeleton":
 		return Monster{
 			Nom:        "Skeleton",
-			HpMax:      100 * c.Lvl,
-			Hp:         100 * c.Lvl,
-			Atk:        8 * c.Lvl,
+			HpMax:      100,
+			Hp:         100,
+			Atk:        8,
 			Initiative: rand.Intn(10) + 1,
 		}
 	case "dragon":
 		return Monster{
 			Nom:        "Dragon",
-			HpMax:      150 * c.Lvl,
-			Hp:         150 * c.Lvl,
-			Atk:        10 * c.Lvl,
+			HpMax:      150,
+			Hp:         150,
+			Atk:        10,
 			Initiative: rand.Intn(10) + 1,
 		}
 	default:
