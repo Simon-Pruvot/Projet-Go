@@ -7,48 +7,48 @@ import (
 	"time"
 )
 
-func initGoblin(tip string) Monster {
+func (c *Character) initGoblin(tip string) Monster {
 	rand.Seed(time.Now().UnixNano())
 
 	switch tip {
 	case "Gobelin":
 		return Monster{
 			Nom:        "Gobelin d'entraînement",
-			HpMax:      40,
-			Hp:         40,
-			Atk:        5,
+			HpMax:      40 * c.Lvl,
+			Hp:         40 * c.Lvl,
+			Atk:        5 * c.Lvl,
 			Initiative: rand.Intn(10) + 1,
 		}
 	case "dead":
 		return Monster{
 			Nom:        "Death",
-			HpMax:      80,
-			Hp:         80,
-			Atk:        7,
+			HpMax:      80 * c.Lvl,
+			Hp:         80 * c.Lvl,
+			Atk:        7 * c.Lvl,
 			Initiative: rand.Intn(10) + 1,
 		}
 	case "skeleton":
 		return Monster{
 			Nom:        "Skeleton",
-			HpMax:      100,
-			Hp:         100,
-			Atk:        8,
+			HpMax:      100 * c.Lvl,
+			Hp:         100 * c.Lvl,
+			Atk:        8 * c.Lvl,
 			Initiative: rand.Intn(10) + 1,
 		}
 	case "dragon":
 		return Monster{
 			Nom:        "Dragon",
-			HpMax:      150,
-			Hp:         150,
-			Atk:        10,
+			HpMax:      150 * c.Lvl,
+			Hp:         150 * c.Lvl,
+			Atk:        10 * c.Lvl,
 			Initiative: rand.Intn(10) + 1,
 		}
 	default:
 		return Monster{
 			Nom:        "Gobelin d'entraînement",
-			HpMax:      40,
-			Hp:         40,
-			Atk:        5,
+			HpMax:      40 * c.Lvl,
+			Hp:         40 * c.Lvl,
+			Atk:        5 * c.Lvl,
 			Initiative: rand.Intn(10) + 1,
 		}
 	}
@@ -138,7 +138,7 @@ func characterTurn(c *Character, m *Monster) bool {
 			switch inputspell {
 			case "&", "1":
 				if len(c.Skills) < 1 || c.Mana < 30 {
-					fmt.Println("Choix invalide ou pas assez de mana.")
+					fmt.Println("Choix invalide ou pas assez de mana.(1/2)")
 					continue
 				}
 				spell := c.Skills[0]
@@ -153,7 +153,7 @@ func characterTurn(c *Character, m *Monster) bool {
 
 			case "é", "2":
 				if len(c.Skills) < 2 || c.Mana < 30 {
-					fmt.Println("Choix invalide ou pas assez de mana.")
+					fmt.Println("Choix invalide ou pas assez de mana.(1/2)")
 					continue
 				}
 				spell := c.Skills[1]

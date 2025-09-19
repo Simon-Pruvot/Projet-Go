@@ -11,7 +11,6 @@ func trainingFight(player *Character, goblin Monster) {
 	fmt.Printf("=== Début de l'entraînement contre %s ===\n", goblin.Nom)
 
 	rand.Seed(time.Now().UnixNano())
-	combat0(player, &goblin)
 
 	lootPool := []Objects{
 		{"Fourrure de Loup", 1},
@@ -34,7 +33,7 @@ func trainingFight(player *Character, goblin Monster) {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
 
 			// Récompenses fixes
-			GainXP(player, 50)
+			GainXP(player, 50*player.Lvl)
 			player.Money += 20
 
 			// Loot aléatoire
@@ -65,7 +64,6 @@ func Fight1(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-	combat(player, &goblin)
 
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
@@ -88,7 +86,7 @@ func Fight1(player *Character, goblin Monster) {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
 
 			// Récompenses fixes
-			GainXP(player, 50)
+			GainXP(player, 50*player.Lvl)
 			player.Money += 20
 
 			// Loot aléatoire
@@ -121,7 +119,6 @@ func Fight2(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-	combat2(player, &goblin)
 
 	lootPool := []Objects{
 		{"Fourrure de Loup", 2},
@@ -144,7 +141,7 @@ func Fight2(player *Character, goblin Monster) {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
 
 			// Récompenses fixes
-			GainXP(player, 50)
+			GainXP(player, 50*player.Lvl)
 			player.Money += 20
 
 			// Loot aléatoire
@@ -177,7 +174,6 @@ func Fight3(player *Character, goblin Monster) {
 
 	// Seed pour la RNG (évite d’avoir toujours le même résultat)
 	rand.Seed(time.Now().UnixNano())
-	combat3(player, &goblin)
 
 	// Définition du loot possible
 	lootPool := []Objects{
@@ -201,7 +197,7 @@ func Fight3(player *Character, goblin Monster) {
 			fmt.Printf("%s est vaincu !\n", goblin.Nom)
 
 			// Récompenses fixes
-			GainXP(player, 50)
+			GainXP(player, 50*player.Lvl)
 			player.Money += 20
 
 			// Loot aléatoire
@@ -219,7 +215,6 @@ func Fight3(player *Character, goblin Monster) {
 		if player.Hp <= 0 {
 			mort()
 			player.isDead()
-			combat3(player, &goblin)
 			fmt.Println("Appuyez sur Entrée pour continuer...")
 			fmt.Scanln()
 			return

@@ -83,7 +83,7 @@ func main() {
 			player.Forgeron(swordLegend, armorLegend, potionLegend)
 			ShowMap()
 		case 't', 'T':
-			monst := initGoblin("Gobelin")
+			monst := player.initGoblin("Gobelin")
 			trainingFight(&player, monst)
 		case 'e', 'E':
 			player.DisplayEquipment()
@@ -92,19 +92,19 @@ func main() {
 			if history {
 				loresquelette()
 			}
-			monst := initGoblin("skeleton")
+			monst := player.initGoblin("skeleton")
 			Fight1(&player, monst)
 		case 'm', 'M':
 			if history {
 				loreelfe2()
 			}
-			monst := initGoblin("dead")
+			monst := player.initGoblin("dead")
 			Fight2(&player, monst)
 		case 'l', 'L':
 			if history {
 				loreboss3()
 			}
-			monst := initGoblin("dragon")
+			monst := player.initGoblin("dragon")
 			Fight3(&player, monst)
 		case 's', 'S':
 			player.displaySkills()
