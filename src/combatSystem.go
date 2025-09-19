@@ -201,7 +201,7 @@ func characterTurn(c *Character, m *Monster) bool {
 		item := c.inv[idx]
 		switch item.nom {
 		case "Potion de vie":
-			c.Hp += 50
+			c.takePot()
 			if c.Hp > c.HpMax {
 				c.Hp = c.HpMax
 			}
