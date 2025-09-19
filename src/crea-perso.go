@@ -136,11 +136,11 @@ func Perso(classe string) Character {
 
 	switch classe {
 	case "/Elfe", "/elfe", "ELFE":
-		return initCharacter(Nom, "Elfe", 1, 80, 80, []Objects{{"Potion de vie", 3}}, []string{}, Equipment{})
+		return initCharacter(Nom, "Elfe", 1, 80, 80, []Objects{{"Potion de vie", 3}}, []string{"Coup de poing"}, Equipment{})
 	case "/Humain", "/humain", "/HUMAIN":
-		return initCharacter(Nom, "Humain", 1, 100, 100, []Objects{{"Potion de vie", 3}}, []string{}, Equipment{})
+		return initCharacter(Nom, "Humain", 1, 100, 100, []Objects{{"Potion de vie", 3}}, []string{"Coup de poing"}, Equipment{})
 	case "/Nain", "/nain", "/NAIN":
-		return initCharacter(Nom, "Nain", 1, 120, 120, []Objects{{"Potion de vie", 3}}, []string{}, Equipment{})
+		return initCharacter(Nom, "Nain", 1, 120, 120, []Objects{{"Potion de vie", 3}}, []string{"Coup de poing"}, Equipment{})
 	default:
 		return CreateClasse()
 	}

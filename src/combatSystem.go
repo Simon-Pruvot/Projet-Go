@@ -133,10 +133,11 @@ func characterTurn(c *Character, m *Monster) bool {
 				fmt.Println("Entrée invalide. Réessayez.")
 				continue
 			}
+			fmt.Println("Coup de poing:1 | Boule de feu:2")
 
 			valid := false
 			switch inputspell {
-			case "&", "1":
+			case "é", "2":
 				if len(c.Skills) < 1 || c.Mana < 30 {
 					fmt.Println("Choix invalide ou pas assez de mana.(1/2)")
 					continue
@@ -151,7 +152,7 @@ func characterTurn(c *Character, m *Monster) bool {
 				valid = true
 				c.Initiative -= 2 // perte d'initiative pour sort
 
-			case "é", "2":
+			case "&", "1":
 				if len(c.Skills) < 2 || c.Mana < 30 {
 					fmt.Println("Choix invalide ou pas assez de mana.(1/2)")
 					continue
