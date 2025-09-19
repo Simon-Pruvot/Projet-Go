@@ -51,7 +51,7 @@ BoucleInventaire:
 		for i := 0; i < slots; i++ {
 			item := "[ vide ]"
 			if i < len(c.inv) {
-				item = fmt.Sprintf("[%d] %s", i, c.inv[i].nom)
+				item = fmt.Sprintf("[%d] %s :%d", i, c.inv[i].nom, c.inv[i].quantity)
 			}
 			cols[i%perRow] = append(cols[i%perRow], item)
 		}
