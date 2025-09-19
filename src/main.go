@@ -21,11 +21,11 @@ func main() {
 	history := false
 	if reponse == "oui" || reponse == "OUI" {
 		history = true
-		if player.Classe == "elfe" {
+		if player.Classe == "Elfe" {
 			loreelfe()
-		} else if player.Classe == "humain" {
+		} else if player.Classe == "Humain" {
 			lorehumain()
-		} else if player.Classe == "nain" {
+		} else if player.Classe == "Nain" {
 			lorenain()
 		}
 	} else {
