@@ -117,6 +117,7 @@ func characterTurn(c *Character, m *Monster) bool {
 		fmt.Printf("%s utilise Attaque spéciale et inflige %d dégâts à %s\n", c.Nom, (12 + c.bonusDMG), m.Nom)
 
 	case "m":
+		fmt.Println("Coup de poing:1 | Boule de feu:2")
 		// Magie : uniquement si on a appris au moins un sort
 		if len(c.Skills) == 0 {
 			fmt.Println("Vous n'avez appris aucun sort.")
@@ -133,16 +134,15 @@ func characterTurn(c *Character, m *Monster) bool {
 				fmt.Println("Entrée invalide. Réessayez.")
 				continue
 			}
-			fmt.Println("Coup de poing:1 | Boule de feu:2")
 
 			valid := false
 			switch inputspell {
 			case "é", "2":
-				if len(c.Skills) < 1 || c.Mana < 30 {
+				if len(c.Skills) < 2 || c.Mana < 30 {
 					fmt.Println("Choix invalide ou pas assez de mana.(1/2)")
 					continue
 				}
-				spell := c.Skills[0]
+				spell := c.Skills[1]
 				c.Mana -= 30
 				m.Hp -= (18 + c.bonusDMG)
 				if m.Hp < 0 {
@@ -153,11 +153,11 @@ func characterTurn(c *Character, m *Monster) bool {
 				c.Initiative -= 2 // perte d'initiative pour sort
 
 			case "&", "1":
-				if len(c.Skills) < 2 || c.Mana < 30 {
+				if len(c.Skills) < 1 || c.Mana < 30 {
 					fmt.Println("Choix invalide ou pas assez de mana.(1/2)")
 					continue
 				}
-				spell := c.Skills[1]
+				spell := c.Skills[0]
 				c.Mana -= 15
 				m.Hp -= (8 + c.bonusDMG)
 				if m.Hp < 0 {
